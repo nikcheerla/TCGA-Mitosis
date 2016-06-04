@@ -64,7 +64,13 @@ kernel[mask] = 1
 cnt = 0
 
 points = []
-for thresh in range(20, 95, 5)/100.0:
+for thresh in np.linspace(0.2,0.95,25,endpoint=False):
+
+    count1 = 0
+    len1 = 0
+    len2 = 0
+    cnt = 0
+
     for image in images:
         image_data_file = image[:-4] + ".out.npy"
         patch_probs = np.load(image_data_file)
@@ -97,6 +103,7 @@ for thresh in range(20, 95, 5)/100.0:
         count1 += count
         len1 += len(probs) - 1
         len2 += len(centroid_coords_filtered)
+        print len2
         cnt += 1
     fpz = count1/float(len1)
     tpz = count1/float(len2)

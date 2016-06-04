@@ -1,10 +1,10 @@
 
 #BSUB -n 2
-#BSUB -q gpu
+#BSUB -q mcore
 #BSUB -W 24:00
 #BSUB -o GPU%J.out
 #BSUB -e GPU%J.err
-#BSUB -R "rusage[mem=48000, ngpus=1]"
+#BSUB -R "rusage[mem=48000]"
 
 if ! [ -f "trainImg_stage1.npy" ]
   then

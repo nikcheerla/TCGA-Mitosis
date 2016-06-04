@@ -131,7 +131,7 @@ nn = NeuralNet(
     verbose=1
 )
 
-nn.load_params_from("cachednn0.986.params");
+nn.load_params_from("cachednn.params");
 
 num = 0;
 
@@ -163,6 +163,8 @@ try:
                 patch_probs[i, j] = prob[0, 1]
                 bar.update(num)
                 num += 1
+                if num % 4000 == 1:
+                    nn.load_params_from("cachednn.params")
 except:
     pass
 np.save(outfile, patch_probs)

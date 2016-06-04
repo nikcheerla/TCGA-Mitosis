@@ -33,6 +33,12 @@ from nolearn_utils.hooks import (
 from nolearn.lasagne import BatchIterator
 from sklearn.metrics import roc_auc_score
 
+def roc_robust(y_true, y_proba):
+    if sum(y_true) == 0 or sum(y_true) == len(y_true):
+        return 0.0
+    else:
+        return roc_auc_score(y_true, y_proba)
+
 
 print "Loading and morphing data"
 
@@ -40,6 +46,7 @@ print "Loading and morphing data"
 # Constants
 SIZE = 2084
 PATCH_SIZE = 101
+MAX_PATCH_SIZE = 101
 PATCH_GAP = 50
 RADIUS = 10
 
@@ -47,20 +54,48 @@ img = []
 img2 = []
 coords = []
 
-cnt = 0
+img_aux = []
+coords = []
+num_images = 0
+max_images = 296
+img_file_loc = "mitoses_image_data"
 
-def roc_robust(y_true, y_proba):
-    if sum(y_true) == 0 or sum(y_true) == len(y_true):
-        return 0.0
-    else:
-        return roc_auc_score(y_true, y_proba)
+for root, dirnames, filenames in os.walk('mitoses_aux_ground'):
+    if (num_images >= max_images):
+            break
+    for filename in filenames:
+        if filename[-3:] != "csv":
+            break
+
+        full_path_csv = os.path.join(root, filename);
+        print full_path_csv,
+        full_path_img = os.path.join(img_file_loc + root[-3:], filename[:-3] + "tif")
+        print full_path_img,
+
+        csvReader = csv.reader(open(full_path_csv))
+        for row in csvReader:
+            xv = int(row[0])
+            yv = int(row[1])
+            for di in range(-7, 7):
+                for dj in range(-7, 7):
+                    coords.append( ( xv + di, yv + dj, -num_images - 1))
+
+        img_aux.append(plt.imread(full_path_img))
+        num_images += 1
+        if (num_images >= max_images):
+            break
+
+img_aux = np.array(img_aux)
+print (img_aux.shape)
+
+img = []
+
+cnt = 0
 
 for imgfile in glob.iglob("train/*.bmp"):
     print "\n" + imgfile,
     annotfile = imgfile[:-3] + "csv"
-    img2file = imgfile[:-3] + "jpg"
     img.append(plt.imread(imgfile))
-    img2.append(plt.imread(img2file))
     csvReader = csv.reader(open(annotfile, 'rb'))
     tot = 0
     imgMask = np.zeros((SIZE, SIZE))
@@ -82,14 +117,44 @@ for imgfile in glob.iglob("train/*.bmp"):
                     tot = tot + 1
     cnt += 1
 img = np.array(img)
-img2 = np.array(img2)
 
 print img.shape
+print img_aux.shape
 print len(coords)
+
+def get_patches(coords, patchsize=PATCH_SIZE):
+    patches = np.zeros((len(coords), patchsize, patchsize, 3))
+    i = 0
+    for (x, y, img_num) in coords:
+        # print x, y
+        #print (x - patchsize/2), (x + patchsize/2 + 1), (y - patchsize/2), (y + patchsize/2 + 1)
+        if img_num >= 0:
+            patches[i] = img[img_num, (x - patchsize / 2):(x + patchsize / 2 + 1),
+                             (y - patchsize / 2):(y + patchsize / 2 + 1), :]
+        else:
+            patches[i] = img_aux[-img_num - 1, (x - patchsize / 2):(x + patchsize / 2 + 1),
+                             (y - patchsize / 2):(y + patchsize / 2 + 1), :]
+        patches[i] = np.divide(patches[i], 255.0)
+        i += 1
+    return patches
+
+lookup = set(coords)
+
+import random
+
+def make_normal_set(length):
+    norm_coords = []
+    while len(norm_coords) < length:
+        triple = (random.randint(MAX_PATCH_SIZE/2, 1999 - MAX_PATCH_SIZE/2 - 1),
+                     random.randint(MAX_PATCH_SIZE/2, 1999 - MAX_PATCH_SIZE/2 - 1),
+                     random.randint(-len(img_aux), len(img) - 1))
+        if triple not in lookup:
+            norm_coords.append(triple)
+    return norm_coords
 
 surplus = 500000 - len(coords)
 trainVal = np.append(np.ones(len(coords)), np.zeros(surplus))
-
+coords_normal = make_normal_set(surplus)
 
 def get_patches(coords, patchsize=PATCH_SIZE):
     patches = np.zeros((len(coords), patchsize, patchsize, 3))
@@ -117,11 +182,7 @@ def get_visual_patches(coords, patchsize=PATCH_SIZE):
     return patches
 
 
-coords = np.load("intermediate_data.npy")
-coords, trainVal2 = shuffle(coords, trainVal)
-trainImg2 = coords
-
-del coords
+trainImg2, trainVal2 = shuffle(np.array(coords + coords_normal), trainVal)
 
 print trainImg2.shape
 

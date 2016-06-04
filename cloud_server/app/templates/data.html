@@ -1,0 +1,161 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>Data| MitosisBird</title>
+		<script type='text/javascript' src='https://ssl-webplayer.unity3d.com/download_webplayer-3.x/3.0/uo/jquery.min.js'></script>		
+		<style type="text/css">
+		<!--
+		body {
+			font-family: Helvetica, Verdana, Arial, sans-serif;
+			background-color: white;
+			color: black;
+			text-align: center;
+		}
+		a:link, a:visited {
+			color: #000;
+		}
+		a:active, a:hover {
+			color: #666;
+		}
+		p.header {
+			font-size: small;
+		}
+		p.header span {
+			font-weight: bold;
+		}
+		p.footer {
+			font-size: x-small;
+		}
+		div.content {
+			margin: auto;
+			width: 960px;
+		}
+		div.broken,
+		div.missing {
+			margin: auto;
+			position: relative;
+			top: 50%;
+			width: 193px;
+		}
+		div.broken a,
+		div.missing a {
+			height: 63px;
+			position: relative;
+			top: -31px;
+		}
+		div.broken img,
+		div.missing img {
+			border-width: 0px;
+		}
+		div.broken {
+			display: none;
+		}
+		div#unityPlayer {
+			cursor: default;
+			height: 600px;
+			width: 960px;
+		}
+		@import "http://fonts.googleapis.com/css?family=Montserrat:300,400,700";
+		.rwd-table {
+		  margin: 1em 0;
+		  table-layout: fixed;
+		  min-width: 300px;
+		}
+		.rwd-table tr {
+		  border-top: 1px solid #ddd;
+		  border-bottom: 1px solid #ddd;
+		}
+		.rwd-table th {
+		  display: none;
+		}
+		.rwd-table td {
+		  display: block;
+		  width: 320px;
+		}
+		.rwd-table td:first-child {
+		}
+		.rwd-table td:last-child {
+		  padding-bottom: .5em;
+		}
+		.rwd-table td:before {
+		  content: attr(data-th) ": ";
+		  font-weight: bold;
+		  width: 6.5em;
+		  display: inline-block;
+		}
+		@media (min-width: 480px) {
+		  .rwd-table td:before {
+		    display: none;
+		  }
+		}
+		.rwd-table th, .rwd-table td {
+		  text-align: center;
+		}
+		@media (min-width: 480px) {
+		  .rwd-table th, .rwd-table td {
+		    display: table-cell;
+		    padding: .25em .5em;
+		  }
+		  .rwd-table th:first-child, .rwd-table td:first-child {
+		    padding-left: 0;
+		  }
+		  .rwd-table th:last-child, .rwd-table td:last-child {
+		    padding-right: 0;
+		  }
+		}
+
+		body {
+		  padding: 0 2em;
+		  font-family: Montserrat, sans-serif;
+		  -webkit-font-smoothing: antialiased;
+		  text-rendering: optimizeLegibility;
+		  color: #444;
+		  background: #eee;
+		}
+
+		h1 {
+		  font-weight: normal;
+		  letter-spacing: -1px;
+		  color: #34495E;
+		}
+
+		.rwd-table {
+		  background: #34495E;
+		  color: #fff;
+		  border-radius: .4em;
+		  overflow: hidden;
+		}
+		.rwd-table tr {
+		  border-color: #46637f;
+		}
+		.rwd-table th, .rwd-table td {
+		  margin: .5em 1em;
+		}
+		@media (min-width: 480px) {
+		  .rwd-table th, .rwd-table td {
+		    padding: 1em !important;
+		  }
+		}
+		.rwd-table th, .rwd-table td:before {
+		  color: #dd5;
+		}
+		.cellimage {
+			width: 180px;
+			height: 180px;
+		}
+		-->
+		</style>
+	</head>
+	<body>
+		<p class="header"> <a href="/index"> Game </a><span>| Data Report |</span> MitosisBird</p>
+		<div class="content">
+			{% for key, value in tables.iteritems()|sort %}
+				<h1> Image {{key[11]}}:</h1>
+				<img src = "{{url_for("static", filename=key)}}" class="cellimage"> </img>
+				<div class="rwd-table"> {{tables[key]}} </div> 
+			{% endfor %}
+		</div>
+		<p class="footer">&laquo; created with <a href="http://unity3d.com/unity/" title="Go to unity3d.com">Unity</a> &raquo;</p>
+	</body>
+</html>
