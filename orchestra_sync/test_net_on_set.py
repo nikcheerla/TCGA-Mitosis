@@ -6,6 +6,8 @@ import cPickle as pickle
 import os
 import glob
 import sys
+import time
+
 
 
 import numpy as np
@@ -31,8 +33,10 @@ RADIUS = 10
 images = glob.glob("test/*.bmp")
 
 for image in images:
+    print "Image: " + image
     print subprocess.check_output(["bsub", "-n", "3", "-q", "mcore", "-W", "120:00", "-R", "rusage[mem=10000]", "-o", image[:-4] + "_prgmdata.out",
         "-e", image[:-4] + "_prgmdata.err", "python", "-u", "img_read.py", image])
+    time.sleep(400)
 
 radius = RADIUS
 kernel = np.zeros((2*radius+1, 2*radius+1))
