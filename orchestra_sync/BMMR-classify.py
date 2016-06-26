@@ -23,137 +23,184 @@ from sklearn import cross_validation
 from sklearn.metrics import roc_auc_score
 
 from PIL import Image
-import codecs
 
-import csv
-import xlrd
+import theano
+from sknn.platform import gpu32
+
+from nolearn.lasagne import NeuralNet, TrainSplit
+from lasagne.updates import adam
+from nolearn.lasagne import BatchIterator
+import cPickle as pickle
+import lasagne
+import PosterExtras as phf
+
+from nolearn_utils.iterators import (
+    ShuffleBatchIteratorMixin,
+    AffineTransformBatchIteratorMixin,
+    RandomFlipBatchIteratorMixin,
+    LCNBatchIteratorMixin,
+    MeanSubtractBatchiteratorMixin,
+    make_iterator
+)
+
+from nolearn_utils.hooks import (
+    SaveTrainingHistory, PlotTrainingHistory,
+    EarlyStopping
+)
+
+from nolearn.lasagne import BatchIterator
+
+from contextlib import contextmanager
 
 
 # Constants
-SIZE = 128
-NUM = 500
-BATCH = 32
-EPOCH = 20
-TRAIN_NUM = 9000
-VAL_NUM = 10000
-TEST_NUM = 11432
-TRAIN = "conv_patches_" + str(SIZE) + "";
-TRAINCLASS = "conv_patches_class_" + str(SIZE) + "";
-TEST = "test_patches";
-TESTCLASS = "test_patches_class";
+SIZE = 600
 
-# Utils
-def save_object(obj, filename):
-    with open(filename, 'wb') as output:
-        pickle.dump(obj, output, pickle.HIGHEST_PROTOCOL)
 
-#Neural Net model
 
-net1 = NeuralNet(
-    layers=[('input', layers.InputLayer),
-            ('conv2d1', layers.Conv2DLayer),
-            ('maxpool1', layers.MaxPool2DLayer),
-            ('conv2d2', layers.Conv2DLayer),
-            ('maxpool2', layers.MaxPool2DLayer),
-            ('dropout1', layers.DropoutLayer),
-            ('dense', layers.DenseLayer),
-            ('dropout2', layers.DropoutLayer),
-            ('output', layers.DenseLayer),
-            ],
-    # input layer
-    input_shape=(None, 1, 128, 128),
-    # layer conv2d1
-    conv2d1_num_filters=256,
-    conv2d1_filter_size=(8, 8),
-    conv2d1_nonlinearity=lasagne.nonlinearities.rectify,
-    conv2d1_W=lasagne.init.GlorotUniform(),  
-    # layer maxpool1
-    maxpool1_pool_size=(3, 3),    
-    # layer conv2d2
-    conv2d2_num_filters=192,
-    conv2d2_filter_size=(6, 6),
-    conv2d2_nonlinearity=lasagne.nonlinearities.rectify,
-    # layer maxpool2
-    maxpool2_pool_size=(2, 2),
-    # dropout1
-    dropout1_p=0.4,    
-    # dense
-    dense_num_units=256,
-    dense_nonlinearity=lasagne.nonlinearities.rectify,    
-    # dropout2
-    dropout2_p=0.4,    
-    # output
-    output_nonlinearity=lasagne.nonlinearities.softmax,
-    output_num_units=10,
-    # optimization method params
-    update=nesterov_momentum,
-    update_learning_rate=0.002,
-    update_momentum=0.9,
-    max_epochs=20,
-    verbose=1,
-    )
+
+
+### TODO 1: Read in data ####
+## Final result: trainImg and trainVal contain data ##
+
 
 # Read in images/classes
 
-trainImg = np.zeros((NUM, 1, SIZE, SIZE))
-trainVal = np.zeros((NUM))
+trainImg = []
+trainVal = []
 
 num = 0
-for filename in glob.iglob('cancer_images_updated/*.jpg'):
-    #print(filename)
-    img = Image.open(filename);
-    img = img.resize((SIZE, SIZE))
-    pix = img.load()
-    for i in range(0, SIZE):
-    	for j in range(0, SIZE):
-    		trainImg[num, 0, i, j] = float(pix[i, j])/256
-    num = num + 1
-    trainVal[num] = 0
+for filename in glob.iglob('BMMR-cancer/*.jpg'):
+    img = Image.open(filename)
+    img = img.resize((SIZE,SIZE))
+    img = np.asarray(img)
+    trainImg.append(img)
+    trainVal.append(0)
 
-for filename in glob.iglob('normal_images_updated/*.jpg'):
-    #print(filename)
-    img = Image.open(filename);
-    img = img.resize((SIZE, SIZE))
-    pix = img.load()
-    for i in range(0, SIZE):
-        for j in range(0, SIZE):
-            trainImg[num, 0, i, j] = float(pix[i, j])/256
-    num = num + 1
-    trainVal[num] = 1
+for filename in glob.iglob('BMMR-normal/*.jpg'):
+    img = Image.open(filename)
+    img = img.resize((SIZE,SIZE))
+    img = np.asarray(img)
+    trainImg.append(img)
+    trainVal.append(0)
 
-
-
-
-
-NUM = num
-trainImg = trainImg[0:NUM, ]
-trainVal = trainVal[0:NUM]
-trainImg = trainImg.astype(np.float32)
+trainImg = np.array([trainImg, trainImg, trainImg]).swapaxes(0, 1)
+print trainImg.shape
+trainVal = np.array(trainVal)
 trainVal = trainVal.astype(np.uint8)
 
-print(trainImg)
-print(num)
-
-TRAIN_NUM = NUM*0.7
-TEST_NUM = NUM*1.0
-
-print('Train Image shape:', trainImg.shape)
-
-print("Train Validation:")
-
-print(trainVal)
-print(sum(trainVal))
-print(len(trainVal))
-
-
-nn = net1.fit(trainImg[0:TRAIN_NUM], trainVal[0:TRAIN_NUM])
-preds = net1.predict_proba(trainImg[TRAIN_NUM:TEST_NUM])
-actual = trainVal[TRAIN_NUM:TEST_NUM]
-
-score = roc_auc_score(preds, actual, average='macro')
-
-print score
 
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+### TODO 2: CREATE AND DESIGN CNN ####
+## Final result: nn contains desired CNN ##
+
+
+
+
+print("\n\nCreating and Designing CNN.")
+
+def roc_robust(y_true, y_proba):
+    if sum(y_true) == 0 or sum(y_true) == len(y_true):
+        return 0.0
+    else:
+        return roc_auc_score(y_true, y_proba)
+
+print("Building Image Perturbation Models/Callbacks:")
+
+train_iterator_mixins = [
+    RandomFlipBatchIteratorMixin,
+    AffineTransformBatchIteratorMixin,
+    #MeanSubtractBatchiteratorMixin
+]
+TrainIterator = make_iterator('TrainIterator', train_iterator_mixins)
+
+test_iterator_mixins = [
+    RandomFlipBatchIteratorMixin,
+    #MeanSubtractBatchiteratorMixin
+]
+TestIterator = make_iterator('TestIterator', test_iterator_mixins)
+
+mean_value = np.mean(np.mean(np.mean(img)))
+
+train_iterator_kwargs = {
+    'batch_size': 20,
+    'affine_p': 0.5,
+    'affine_scale_choices': np.linspace(start=0.85, stop=1.2, num=10),
+    'flip_horizontal_p': 0.5,
+    'flip_vertical_p': 0.5,
+    'affine_translation_choices': np.arange(-5, 6, 1),
+    'affine_rotation_choices': np.linspace(start=-20.0, stop=20.0, num=10),
+    #'mean': mean_value,
+}
+train_iterator_tmp = TrainIterator(**train_iterator_kwargs)
+
+test_iterator_kwargs = {
+    'batch_size': 20,
+    'flip_horizontal_p': 0.5,
+    'flip_vertical_p': 0.5,
+    #'mean': mean_value,
+}
+test_iterator_tmp = TestIterator(**test_iterator_kwargs)
+
+
+
+
+
+
+class CustomBatchIterator(BatchIterator):
+
+    def __init__(self, batch_size, built_iterator):
+        super(CustomBatchIterator, self).__init__(batch_size=batch_size)
+        self.iter = built_iterator
+
+    def transform(self, Xb, yb):
+        Xb = Xb.astype(np.float32)
+        yb = yb.astype(np.uint8)
+        Xb, yb = self.iter.transform(Xb, yb)
+        #for i in range(0, len(yb)):
+        #    plt.imsave("img" + str(yb[i]) + "num" + str(i) + ".png", Xb[i].swapaxes(0, 2))
+        return Xb, yb
+
+train_iterator = CustomBatchIterator(
+    batch_size=20, built_iterator=train_iterator_tmp)
+test_iterator = CustomBatchIterator(
+    batch_size=20, built_iterator=test_iterator_tmp)
+
+# Model Specifications
+net = phf.build_GoogLeNet(SIZE, SIZE)
+values = pickle.load(open('blvc_googlenet.pkl', 'rb'))['param values'][:-2]
+
+nn = NeuralNet(
+    net['softmax'],
+    max_epochs=1,
+    update=adam,
+    update_learning_rate=.0001, #start with a really low learning rate
+    #objective_l2=0.0001,
+
+    # batch iteration params
+    batch_iterator_train=train_iterator,
+    batch_iterator_test=test_iterator,
+
+    train_split=TrainSplit(eval_size=0.2),
+    verbose=3,
+)
+
+
+
+
+nn.fit(trainImg, trainVal)

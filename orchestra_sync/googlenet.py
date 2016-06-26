@@ -69,12 +69,14 @@ MAX_PATCH_SIZE = 139
 PATCH_GAP = 69
 RADIUS = 10
 
-N = 10000
+N = 15000
 K = 1.5
 EPOCHS = 12
 DECAY = 1.0
 KGROWTH = 0.45
 EGROWTH = 0.99
+
+VALID = 5002
 
 def inbounds(x, y):
     return x < SIZE2 - PATCH_SIZE and x > PATCH_SIZE and y < SIZE2 - PATCH_SIZE and y > PATCH_SIZE
@@ -256,6 +258,7 @@ TestIterator = make_iterator('TestIterator', test_iterator_mixins)
 
 mean_value = np.mean(np.mean(np.mean(img)))
 
+
 train_iterator_kwargs = {
     'batch_size': 20,
     'affine_p': 0.5,
@@ -323,20 +326,7 @@ test_iterator = CustomBatchIterator(
 net = phf.build_GoogLeNet(PATCH_SIZE, PATCH_SIZE)
 values = pickle.load(open('blvc_googlenet.pkl', 'rb'))['param values'][:-2]
 
-nn = NeuralNet(
-    net['softmax'],
-    max_epochs=1,
-    update=adam,
-    update_learning_rate=.0001, #start with a really low learning rate
-    #objective_l2=0.0001,
 
-    # batch iteration params
-    batch_iterator_train=train_iterator,
-    batch_iterator_test=test_iterator,
-
-    train_split=TrainSplit(eval_size=0.2),
-    verbose=3,
-)
 
 
 
@@ -367,7 +357,6 @@ nn = NeuralNet(
 
 
 
-lookup = set(coords)
 proba_before = 0.0
 proba_after = 0.0
 overlap = 0.0
@@ -433,6 +422,43 @@ def update_stack(normal_stack, iters, net):
 
 
 
+lookup = set(coords)
+
+coords = shuffle(coords)
+valid_sample_mitosis = coords[0:(VALID/2)]
+coords = coords[(VALID/2):(len(coords))]
+valid_sample_normal = create_stack(VALID/2)
+
+valid_sample = valid_sample_mitosis + valid_sample_normal
+
+valid_sample_y = np.append(np.ones(VALID/2), np.zeros(VALID/2))
+
+lookup = set(np.append(coords, valid_sample_normal))
+
+def get_validation(train_X, train_y, net):
+    return train_X, valid_sample, train_y, valid_sample_y
+
+
+
+nn = NeuralNet(
+    net['softmax'],
+    max_epochs=1,
+    update=adam,
+    update_learning_rate=.0001, #start with a really low learning rate
+    #objective_l2=0.0001,
+
+    # batch iteration params
+    batch_iterator_train=train_iterator,
+    batch_iterator_test=test_iterator,
+
+    train_split=get_validation,
+    verbose=3,
+)
+
+
+
+
+
 
 
 
@@ -453,9 +479,9 @@ def update_stack(normal_stack, iters, net):
 ### TODO 4: Train network on normal stacks ###
 ## Final result: done! ###
 
-print('\nLoading Data from Previous Network')
+#print('\nLoading Data from Previous Network')
 
-nn.load_params_from("cachedgooglenn2.params")
+#nn.load_params_from("cachedgooglenn2.params")
 
 print("\n\nTraining Network!")
 
@@ -470,9 +496,9 @@ for k in range(0, 1000):
     data, val = shuffle(data, val)
     for i in range(0, int(EPOCHS)):
         nn.fit(data, val)
-        cur_accuracy = nn.train_history_[-1]['train_loss']
-        if cur_accuracy - 0.0005 > saved_accuracy:
-            print("Loss Drop! Loading previous network!")
+        cur_accuracy = nn.train_history_[-1]['valid_loss']
+        if cur_accuracy - 0.008 > saved_accuracy:
+            print("Test Loss Jump! Loading previous network!")
             with suppress_stdout():
                 nn.load_params_from("cachedgooglenn2.params")
         else:

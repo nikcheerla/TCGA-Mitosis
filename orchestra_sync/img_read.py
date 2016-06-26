@@ -2,16 +2,9 @@ import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 
-
-
 from urllib import urlretrieve
 import cPickle as pickle
-import os
-import glob
-import sys
-import gzip
-
-
+import os, glob, sys, gzip
 
 import numpy as np
 
@@ -20,14 +13,8 @@ from sklearn.metrics import confusion_matrix
 
 import progressbar
 
-
-
 import lasagne
-
-
 import PosterExtras as phf
-
-
 
 from nolearn.lasagne import NeuralNet, TrainSplit
 from lasagne.updates import adam
@@ -121,17 +108,30 @@ nn = NeuralNet(
     verbose=3,
 )
 
-nn.load_params_from("cachedgooglenn.params");
+nn.load_params_from("cachedgooglenn2.params");
+
+img = plt.imread(imgfile);
+
+def get_patches(coords, patchsize=PATCH_SIZE):
+    patches = np.zeros((len(coords), patchsize, patchsize, 3))
+    i = 0
+    for (x, y) in coords:
+        #print x, y
+        #print (x - patchsize/2), (x + patchsize/2 + 1), (y - patchsize/2), (y + patchsize/2 + 1)
+        patches[i] = img[(x - patchsize / 2):(x + patchsize / 2 + 1),
+                         (y - patchsize / 2):(y + patchsize / 2 + 1), :]
+        patches[i] = np.divide(patches[i], 255.0)
+        i += 1
+    return patches
 
 
 patch_probs = np.zeros((SIZE, SIZE));
 patch_probs = patch_probs.astype(np.float32);
 
-SKIP = 2;
+SKIP = 3;
 
 num = 0;
-with progressbar.ProgressBar(max_value=(2084/SKIP*2084/SKIP + 2)) as bar:
-    img = plt.imread(imgfile);
+with progressbar.ProgressBar(max_value=(2084/SKIP+ 2)) as bar:
     patch = np.zeros((1, PATCH_SIZE, PATCH_SIZE, 3))
     patch = patch.astype(np.float32)
 
@@ -141,17 +141,18 @@ with progressbar.ProgressBar(max_value=(2084/SKIP*2084/SKIP + 2)) as bar:
     mmx = SIZE/8
 
     for i in range(x1, x2, SKIP):
+        patches = []
         for j in range(y1, y2, SKIP):
             sx = i - PATCH_SIZE/2
             sy = j - PATCH_SIZE/2
-            patch[0] = np.divide(img[sx:sx + PATCH_SIZE, sy:sy+PATCH_SIZE], 255.0)
-            prob = nn.predict_proba(patch)
-            patch_probs[i, j] = prob[0, 1]
-            bar.update(num)
-            num += 1
-            if num % 4000 == 0:
-                print ("\n\nReloading network params!")
-                nn.load_params_from("cachedgooglenn.params");
+            patches.append((sx, sy))
+        patches = get_patches(patches)
+        prob = nn.predict_proba(patches)
+        patch_probs[i, y1:y2:SKIP] = prob[:, 1]
+        bar.update(num)
+        num += 1
+        print ("\n\nReloading network params!")
+        nn.load_params_from("cachedgooglenn2.params");
 
 np.save(outfile, patch_probs)
 plt.imsave(imgoutfile, patch_probs)

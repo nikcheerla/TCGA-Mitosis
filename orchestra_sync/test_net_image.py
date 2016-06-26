@@ -2,60 +2,333 @@ import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 
+from urllib import urlretrieve
 import cPickle as pickle
-import os
-import glob
-import sys
-
+import os, glob, sys, gzip
 
 import numpy as np
-import random
-from heapq import heappush, heappop, heappushpop, nlargest, heapify
 
-import csv
-import subprocess
+from sklearn.metrics import classification_report
+from sklearn.metrics import confusion_matrix
 
-from scipy.signal import convolve
-from scipy.spatial import distance
+import progressbar
+
+import lasagne
+import PosterExtras as phf
+
+from nolearn.lasagne import NeuralNet, TrainSplit
+from lasagne.updates import adam
+from nolearn.lasagne import BatchIterator
+
+
 
 # Constants
 SIZE = 2084
-PATCH_SIZE = 101
-PATCH_GAP = 50
+PATCH_SIZE = 139
+PATCH_GAP = 69
 RADIUS = 10
 
+# -*- coding: utf-8 -*-
+"""
+Created on Wed Mar  9 11:32:05 2016
 
-nn = pickle.load(open("nn_stage2.pkl", "rb"))
+@author: dayong
+"""
+import numpy as np
+from scipy import ndimage as nd
+import skimage as ski
+import skimage.io as skio
+from skimage.exposure import rescale_intensity
+from skimage import morphology
+import scipy.ndimage.morphology as smorphology
+from scipy.ndimage import gaussian_filter
+from skimage.measure import label, regionprops
+from skimage.segmentation import clear_border
+#from skimage.filters import gaussian_filter
 
-img = plt.imread(image_file)
-patch_probs = np.zeros(SIZE, SIZE)
+def nuclei_detect_pipeline(img, MinPixel = 200, MaxPixel=2500):
+    sn = stain_normliazation('nuclei_v1_matlab/StainNormalization/ref.png')
+    nimg = sn.stain(img)
+    return nimg, nuclei_detection_cancer(nimg, MinPixel, MaxPixel)
+
+def nuclei_detection_cancer(img, MinPixel, MaxPixel, debug = False):
+    img_f = ski.img_as_float(img)
+    adjustRed = rescale_intensity(img_f[:,:,0])
+    adjustRed[adjustRed < 0.5] = 1
+    roiGamma = rescale_intensity(adjustRed, in_range=(0, 0.8));
+    roiMaskThresh = roiGamma < (250 / 255.0) ;
+
+    roiMaskFill = morphology.remove_small_objects(~roiMaskThresh, MinPixel);
+    roiMaskNoiseRem = morphology.remove_small_objects(~roiMaskFill,150);
+    roiMaskDilat = morphology.opening(roiMaskNoiseRem, morphology.disk(10));
+    cancer_bw = smorphology.binary_fill_holes(roiMaskDilat)
+
+    img_f = ski.img_as_float(img)
+    adjustRed = rescale_intensity(img_f[:,:,0])
+    roiGamma = rescale_intensity(adjustRed, in_range=(0, 0.5));
+    roiMaskThresh = roiGamma < (250 / 255.0) ;
+
+    roiMaskFill = morphology.remove_small_objects(~roiMaskThresh, MinPixel);
+    roiMaskNoiseRem = morphology.remove_small_objects(~roiMaskFill,150);
+    roiMaskDilat = morphology.opening(roiMaskNoiseRem, morphology.disk(5));
+    roiMask = smorphology.binary_fill_holes(roiMaskDilat)
+
+    hsv = ski.color.rgb2hsv(img);
+    hsv[:,:,2] = 0.8;
+    img2 = ski.color.hsv2rgb(hsv)
+    diffRGB = img2-img_f
+    adjRGB = np.zeros(diffRGB.shape)
+    adjRGB[:,:,0] = rescale_intensity(diffRGB[:,:,0],in_range=(0, 0.4))
+    adjRGB[:,:,1] = rescale_intensity(diffRGB[:,:,1],in_range=(0, 0.4))
+    adjRGB[:,:,2] = rescale_intensity(diffRGB[:,:,2],in_range=(0, 0.4))
+
+    gauss = gaussian_filter(adjRGB[:,:,2], sigma=3, truncate=5.0);
+
+    bw1 = gauss>(100/255.0);
+    bw1 = bw1 * roiMask;
+    bw1_bwareaopen = morphology.remove_small_objects(bw1, MinPixel)
+    bw2 = smorphology.binary_fill_holes(bw1_bwareaopen);
+
+    bwDist = nd.distance_transform_edt(bw2);
+    filtDist = gaussian_filter(bwDist,sigma=5, truncate=5.0);
+
+    bw3 = np.logical_or(bw2, cancer_bw)
+
+    L = label(bw3)
+    L = clear_border(L)
+    R = regionprops(L)
+    coutn = 0
+    for idx, R_i in enumerate(R):
+        #print(idx, R_i['area'], MinPixel, MaxPixel)
+        if R_i['area'] > MaxPixel or R_i['area'] < MinPixel:
+            L[L==R_i['label']] = 0
+        else:
+            r, l = R_i['centroid']
+            #pass
+    BW = L > 0
+
+    if debug:
+        plt.figure(1)
+        skio.imshow(L)
+        plt.show()
+    return BW
+
+def nuclei_detection(img, MinPixel, MaxPixel):
+    img_f = ski.img_as_float(img)
+    adjustRed = rescale_intensity(img_f[:,:,0])
+    roiGamma = rescale_intensity(adjustRed, in_range=(0, 0.5));
+    roiMaskThresh = roiGamma < (250 / 255.0) ;
+
+    roiMaskFill = morphology.remove_small_objects(~roiMaskThresh, MinPixel);
+    roiMaskNoiseRem = morphology.remove_small_objects(~roiMaskFill,150);
+    roiMaskDilat = morphology.dilation(roiMaskNoiseRem, morphology.disk(3));
+    roiMask = smorphology.binary_fill_holes(roiMaskDilat)
+
+    hsv = ski.color.rgb2hsv(img);
+    hsv[:,:,2] = 0.8;
+    img2 = ski.color.hsv2rgb(hsv)
+    diffRGB = img2-img_f
+    adjRGB = np.zeros(diffRGB.shape)
+    adjRGB[:,:,0] = rescale_intensity(diffRGB[:,:,0],in_range=(0, 0.4))
+    adjRGB[:,:,1] = rescale_intensity(diffRGB[:,:,1],in_range=(0, 0.4))
+    adjRGB[:,:,2] = rescale_intensity(diffRGB[:,:,2],in_range=(0, 0.4))
+
+    gauss = gaussian_filter(adjRGB[:,:,2], sigma=3, truncate=5.0);
+
+    bw1 = gauss>(100/255.0);
+    bw1 = bw1 * roiMask;
+    bw1_bwareaopen = morphology.remove_small_objects(bw1, MinPixel)
+    bw2 = smorphology.binary_fill_holes(bw1_bwareaopen);
+
+    bwDist = nd.distance_transform_edt(bw2);
+    filtDist = gaussian_filter(bwDist,sigma=5, truncate=5.0);
+
+    L = label(bw2)
+    R = regionprops(L)
+    coutn = 0
+    for idx, R_i in enumerate(R):
+        if R_i.area < MaxPixel and R_i.area > MinPixel:
+            r, l = R_i.centroid
+            #print(idx, filtDist[r,l])
+        else:
+            L[L==(idx+1)] = 0
+    BW = L > 0
+    return BW
+
+class stain_normliazation:
+    def __get_mv_sv(self, img):
+        mv,sv = [],[]
+        for i in range(3):
+            mv.append(np.mean(img[:,:,i]))
+            sv.append(np.std(img[:,:,i]))
+        return mv, sv
+    def __init__(self, ref_name):
+        self.img_ref = skio.imread(ref_name)
+        self.img_ref_lab = ski.color.rgb2lab(self.img_ref)
+        self.mv, self.sv = self.__get_mv_sv(self.img_ref_lab)
+        #print self.mv, self.sv
+    def stain(self, img):
+        img_lab = ski.color.rgb2lab(img)
+        mv, sv = self.__get_mv_sv(img_lab)
+        #print mv, sv
+        for i in range(3):
+            img_lab[:,:,i] = ((img_lab[:,:,i] - mv[i]) * (self.sv[i] / sv[i])) + self.mv[i]
+        img2 = ski.color.lab2rgb(img_lab)
+        if 0:
+            plt.subplot(131); skio.imshow(self.img_ref)
+            plt.subplot(132); skio.imshow(img)
+            plt.subplot(133); skio.imshow(img2)
+        img2_ui = ski.img_as_ubyte(img2)
+        return img2_ui
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+radius = PATCH_GAP
+kernel = np.zeros((2*radius+1, 2*radius+1))
+y,x = np.ogrid[-radius:radius+1, -radius:radius+1]
+mask = x**2 + y**2 >= radius**2
+
+
+
+from contextlib import contextmanager
+import warnings
+import sys, os
+import theano
+
+import sklearn
+import sknn
+
+from sklearn.utils import shuffle
+from scipy.spatial import distance
+from sklearn import cross_validation
+
+from nolearn.lasagne import BatchIterator
+from sklearn.metrics import roc_auc_score
+
+
+# command line args
+
+imgfile = sys.argv[1]
+print "IMAGE: " + imgfile
+outfile = imgfile[:-4] + ".out"
+imgoutfile = imgfile[:-4] + ".png"
+
+
+
+
+#loading network
+
+import lasagne
+from lasagne import layers
+from lasagne.updates import nesterov_momentum
+
+from nolearn.lasagne import NeuralNet
+from nolearn.lasagne import visualize
+
+class RadialBatchIterator(BatchIterator):
+
+    def __init__(self, batch_size):
+        super(RadialBatchIterator, self).__init__(batch_size=batch_size)
+
+    def transform(self, Xb, yb):
+        Xb = Xb.astype(np.float32).swapaxes(1, 3)
+        for i in range(0, Xb.shape[0]):
+            for c in range(0, 3):
+                Xb[i, c][mask] = 0.0
+        if yb != None:
+            yb = yb.astype(np.uint8)
+        #for i in range(0, len(yb)):
+        #    plt.imsave("img" + str(yb[i]) + "num" + str(i) + ".png", Xb[i].swapaxes(0, 2))
+        return Xb, yb
+
+
+test_iterator = RadialBatchIterator(batch_size=1)
+
+net = phf.build_GoogLeNet(PATCH_SIZE, PATCH_SIZE)
+
+
+nn = NeuralNet(
+    net['softmax'],
+    max_epochs=1,
+    update=adam,
+    update_learning_rate=.00014, #start with a really low learning rate
+    #objective_l2=0.0001,
+
+    # batch iteration params
+    batch_iterator_test=test_iterator,
+
+    train_split=TrainSplit(eval_size=0.2),
+    verbose=3,
+)
+
+nn.load_params_from("cachedgooglenn2.params");
+
+img = plt.imread(imgfile);
+print ("making nuclei map")
+nimg, nuclei_map = nuclei_detect_pipeline(img)
+print ('created')
+
+def get_patches(coords, patchsize=PATCH_SIZE):
+    patches = np.zeros((len(coords), patchsize, patchsize, 3))
+    i = 0
+    for (x, y) in coords:
+        #print x, y
+        #print (x - patchsize/2), (x + patchsize/2 + 1), (y - patchsize/2), (y + patchsize/2 + 1)
+        patches[i] = img[(x - patchsize / 2):(x + patchsize / 2 + 1),
+                         (y - patchsize / 2):(y + patchsize / 2 + 1), :]
+        patches[i] = np.divide(patches[i], 255.0)
+        i += 1
+    return patches
+
+
+patch_probs = np.zeros((SIZE, SIZE));
+patch_probs = patch_probs.astype(np.float32);
+
+SKIP = 3;
+
+num = 0;
 
 patch = np.zeros((1, PATCH_SIZE, PATCH_SIZE, 3))
 patch = patch.astype(np.float32)
-patch = np.swapaxes(patch, 1, 3)
 
-y1, y2 = PATCH_GAP + 1, SIZE - PATCH_GAP - 1
-x1, x2 = PATCH_GAP + 1, SIZE - PATCH_GAP - 1
+y1, y2 = PATCH_SIZE, SIZE - PATCH_SIZE
+x1, x2 = PATCH_SIZE, SIZE - PATCH_SIZE
 
-num = 0
-with progressbar.ProgressBar(max_value=2084*2084) as bar:
-    for i in range(x1, x2):
-        for j in range(y1, y2):
-    	#if not nuclei_map[i, j]:
-    	#	num += 1
-    	#	bar.update(num)
-    	#	continue
-            sx = i - PATCH_SIZE/2
-            sy = j - PATCH_SIZE/2
-            patch = np.swapaxes(patch, 1, 3)
-            patch[0] = np.divide(img[sx:sx + PATCH_SIZE, sy:sy+PATCH_SIZE], 255.0)
-            patch = np.swapaxes(patch, 1, 3)
-            with suppress_stdout():
-                prob = nn.predict_proba(patch)
-            patch_probs[i, j] = prob[0, 1]
-        	bar.update(num)
-        	num += 1
+with progressbar.ProgressBar(max_value=(2084/SKIP*2084/SKIP + 2)) as bar:
+    patches = []
+    for i in range(x1, x2, SKIP):
+        for j in range(y1, y2, SKIP):
+            bar.update(num)
+            num += 1
+            if nuclei_map[i, j]:
+                sx = i - PATCH_SIZE/2
+                sy = j - PATCH_SIZE/2
+                patches.append((sx, sy))
+                if len(patches) >= 5000:
+                    print ("Evaluating!")
+                    patches2 = get_patches(patches)
+                    prob = nn.predict_proba(patches2)
+                    for k in range(0, len(patches)):
+                        sx, sy = patches[k]
+                        patch_probs[sx, sy] = prob[k, 1]
+                    patches = []
 
-npy.save(outfile, patch_probs)
-print patch_probs
-print patch_probs.size
+np.save(outfile, patch_probs)
+plt.imsave(imgoutfile, patch_probs)
