@@ -69,12 +69,12 @@ MAX_PATCH_SIZE = 139
 PATCH_GAP = 69
 RADIUS = 10
 
-N = 15000
+N = 8000
 K = 1.5
 EPOCHS = 12
 DECAY = 1.0
-KGROWTH = 0.45
-EGROWTH = 0.99
+KGROWTH = 0.9
+EGROWTH = 0.98
 
 VALID = 5002
 
@@ -116,36 +116,40 @@ img_aux = []
 coords = []
 
 num_images = 0
-max_images = 0
-img_file_loc = "mitoses_image_data2"
+max_images = 1100
+csv_file_loc = "mitoses_aux_ground"
 
 print("Reading in auxilary image data:")
 
-for root, dirnames, filenames in os.walk('mitoses_aux_ground2'):
+for root, dirnames, filenames in os.walk('mitoses_image_data'):
     if (num_images >= max_images):
             break
     for filename in filenames:
-        if filename[-3:] != "csv":
+        if filename[-3:] != "tif":
             break
 
-        full_path_csv = os.path.join(root, filename);
-        print(full_path_csv, end=", ")
-        full_path_img = os.path.join(img_file_loc + root[-3:], filename[:-3] + "tif")
-        print(full_path_img, end=" ::: ")
+        full_path_img = os.path.join(root, filename);
+        print(full_path_img, end=", ")
+        full_path_csv = os.path.join(csv_file_loc + root[-3:], filename[:-3] + "csv")
+        print(full_path_csv, end=" ::: ")
 
-        csvReader = csv.reader(open(full_path_csv))
-        for row in csvReader:
-            xv = int(row[0])
-            yv = int(row[1])
-            for di in range(-RADIUS - 1, RADIUS + 1):
-                for dj in range(-RADIUS - 1, RADIUS + 1):
-                    if distance.euclidean([di, dj, 0], [0, 0, 0]) <= RADIUS and inbounds(xv + di, yv + dj):
-                        coords.append( ( xv + di, yv + dj, -num_images - 1))
+        try:
+            csvReader = csv.reader(open(full_path_csv))
+            for row in csvReader:
+                xv = int(row[0])
+                yv = int(row[1])
+                for di in range(-RADIUS - 1, RADIUS + 1):
+                    for dj in range(-RADIUS - 1, RADIUS + 1):
+                        if distance.euclidean([di, dj, 0], [0, 0, 0]) <= RADIUS and inbounds(xv + di, yv + dj):
+                            coords.append( ( xv + di, yv + dj, -num_images - 1))
 
-        img_aux.append(plt.imread(full_path_img))
-        num_images += 1
-        if (num_images >= max_images):
-            break
+            img_aux.append(plt.imread(full_path_img))
+            num_images += 1
+            if (num_images >= max_images):
+                break
+        except:
+            pass
+
 
 img_aux = np.array(img_aux)
 print (img_aux.shape)
@@ -497,7 +501,7 @@ for k in range(0, 1000):
     for i in range(0, int(EPOCHS)):
         nn.fit(data, val)
         cur_accuracy = nn.train_history_[-1]['valid_loss']
-        if cur_accuracy - 0.008 > saved_accuracy:
+        if cur_accuracy - 0.004 > saved_accuracy:
             print("Test Loss Jump! Loading previous network!")
             with suppress_stdout():
                 nn.load_params_from("cachedgooglenn2.params")

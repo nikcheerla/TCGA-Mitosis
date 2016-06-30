@@ -5,6 +5,8 @@ import matplotlib.cm as cm
 from urllib import urlretrieve
 import cPickle as pickle
 import os, glob, sys, gzip
+import sys, os, glob, csv, random
+
 
 import numpy as np
 
@@ -19,6 +21,21 @@ import PosterExtras as phf
 from nolearn.lasagne import NeuralNet, TrainSplit
 from lasagne.updates import adam
 from nolearn.lasagne import BatchIterator
+
+from contextlib import contextmanager
+
+def limit(num, minn, maxx):
+    return min(max(num, minn), maxx)
+
+@contextmanager
+def suppress_stdout():
+    with open(os.devnull, "w") as devnull:
+        old_stdout = sys.stdout
+        sys.stdout = devnull
+        try:
+            yield
+        finally:
+            sys.stdout = old_stdout
 
 
 
@@ -47,9 +64,7 @@ from skimage.segmentation import clear_border
 #from skimage.filters import gaussian_filter
 
 def nuclei_detect_pipeline(img, MinPixel = 200, MaxPixel=2500):
-    sn = stain_normliazation('nuclei_v1_matlab/StainNormalization/ref.png')
-    nimg = sn.stain(img)
-    return nimg, nuclei_detection_cancer(nimg, MinPixel, MaxPixel)
+    return img, nuclei_detection(img, MinPixel, MaxPixel)
 
 def nuclei_detection_cancer(img, MinPixel, MaxPixel, debug = False):
     img_f = ski.img_as_float(img)
@@ -278,20 +293,27 @@ nn = NeuralNet(
     verbose=3,
 )
 
-nn.load_params_from("cachedgooglenn2.params");
+nn.load_params_from("cachedgooglenn.params");
 
 img = plt.imread(imgfile);
 print ("making nuclei map")
 nimg, nuclei_map = nuclei_detect_pipeline(img)
 print ('created')
 
+print('synthesizing image through reflection')
+img2 = np.append(img, np.append(img, img, axis = 0), axis = 0)
+img3 = np.append(img2, np.append(img2, img2, axis = 1), axis = 1)
+print('synthesized -- ', img3.shape)
+
 def get_patches(coords, patchsize=PATCH_SIZE):
     patches = np.zeros((len(coords), patchsize, patchsize, 3))
     i = 0
     for (x, y) in coords:
+        x += SIZE
+        y += SIZE
         #print x, y
         #print (x - patchsize/2), (x + patchsize/2 + 1), (y - patchsize/2), (y + patchsize/2 + 1)
-        patches[i] = img[(x - patchsize / 2):(x + patchsize / 2 + 1),
+        patches[i] = img3[(x - patchsize / 2):(x + patchsize / 2 + 1),
                          (y - patchsize / 2):(y + patchsize / 2 + 1), :]
         patches[i] = np.divide(patches[i], 255.0)
         i += 1
@@ -308,27 +330,81 @@ num = 0;
 patch = np.zeros((1, PATCH_SIZE, PATCH_SIZE, 3))
 patch = patch.astype(np.float32)
 
-y1, y2 = PATCH_SIZE, SIZE - PATCH_SIZE
-x1, x2 = PATCH_SIZE, SIZE - PATCH_SIZE
+y1, y2 = 1, SIZE - 1
+x1, x2 = 1, SIZE - 1
 
-with progressbar.ProgressBar(max_value=(2084/SKIP*2084/SKIP + 2)) as bar:
+coords = []
+
+annotfile = imgfile[:-3] + "csv"
+csvReader = csv.reader(open(annotfile, 'rb'))
+tot = 0
+imgMask = np.zeros((SIZE, SIZE))
+for row in csvReader:
+    minx, miny, maxx, maxy = (SIZE, SIZE, 0, 0)
+    random_coords = []
+    for i in range(0, len(row) / 2):
+        xv, yv = (int(row[2 * i]), int(row[2 * i + 1]))
+        if xv > PATCH_SIZE / 2 + 1 and yv > PATCH_SIZE / 2 + 1 and xv < SIZE - PATCH_SIZE / 2 - 1 and yv < SIZE - PATCH_SIZE / 2 - 1:
+            random_coords.append([yv, xv])
+
+    centroid = np.array(random_coords).mean(axis=0).astype(int)
+    print (centroid)
+    for i in range(0, len(row) / 2):
+        xv, yv = (int(row[2 * i]), int(row[2 * i + 1]))
+        if distance.euclidean([yv, xv], centroid) <= RADIUS:
+            if xv > PATCH_SIZE / 2 + 1 and yv > PATCH_SIZE / 2 + 1 and xv < SIZE - PATCH_SIZE / 2 - 1 and yv < SIZE - PATCH_SIZE / 2 - 1:
+                coords.append((yv, xv))
+                tot = tot + 1
+
+
+
+print ("First nuclei map " + str(nuclei_map[0, 0]))
+with progressbar.ProgressBar(max_value=(2084/SKIP*2084/SKIP + 1)) as bar:
     patches = []
     for i in range(x1, x2, SKIP):
         for j in range(y1, y2, SKIP):
             bar.update(num)
             num += 1
-            if nuclei_map[i, j]:
-                sx = i - PATCH_SIZE/2
-                sy = j - PATCH_SIZE/2
-                patches.append((sx, sy))
-                if len(patches) >= 5000:
+
+            sx = i - PATCH_SIZE/2
+            sy = j - PATCH_SIZE/2
+
+            cover = False
+            for dx in range(-6, 6):
+                for dy in range(-6, 6):
+                    if nuclei_map[limit(i + dx, 0, SIZE - 1), limit(j + dy, 0, SIZE - 1)]:
+                        cover = True
+
+            for xx, yy in coords:
+                if i == xx and j == yy:
+                    print ("Found coordinate of mitosis: ", (xx, yy))
+                    print ("Cover = ", cover)
+
+            if cover:
+                patches.append((i, j))
+                if len(patches) >= 500:
                     print ("Evaluating!")
                     patches2 = get_patches(patches)
                     prob = nn.predict_proba(patches2)
                     for k in range(0, len(patches)):
                         sx, sy = patches[k]
                         patch_probs[sx, sy] = prob[k, 1]
+
+                        for xx, yy in coords:
+                            if sx == xx and sy == yy:
+                                print ("Found coordinate of mitosis: ", (xx, yy))
+                                print ("Prob = ", prob[k, 1])
                     patches = []
+                    with suppress_stdout():
+                        nn.load_params_from("cachedgooglenn.params");
+
+print ("Evaluating!")
+patches2 = get_patches(patches)
+prob = nn.predict_proba(patches2)
+for k in range(0, len(patches)):
+    sx, sy = patches[k]
+    patch_probs[sx, sy] = prob[k, 1]
+patches = []
 
 np.save(outfile, patch_probs)
 plt.imsave(imgoutfile, patch_probs)

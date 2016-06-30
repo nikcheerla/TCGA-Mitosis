@@ -30,7 +30,7 @@ def build_inception_module(name, input_layer, nfilters):
     net['5x5_reduce'] = ConvLayer(
         input_layer, nfilters[4], 1, flip_filters=False)
     net['5x5'] = DropoutLayer(ConvLayer(
-        net['5x5_reduce'], nfilters[5], 5, pad=2, nonlinearity=elu, flip_filters=False), p = 0.45)
+        net['5x5_reduce'], nfilters[5], 5, pad=2, nonlinearity=elu, flip_filters=False), p = 0.4)
 
     net['output'] = ConcatLayer([
         net['1x1'],
@@ -54,7 +54,7 @@ def build_GoogLeNet(width, height):
         net['conv1/7x7_s2'], pool_size=3, stride=2)
     net['pool1/norm1'] = LRNLayer(net['pool1/3x3_s2'], alpha=0.00002, k=1)
     net['conv2/3x3_reduce'] = DropoutLayer(ConvLayer(
-        net['pool1/norm1'], 64, 1, nonlinearity=elu, flip_filters=False), p = 0.4)
+        net['pool1/norm1'], 64, 1, nonlinearity=elu, flip_filters=False), p = 0.2)
     net['conv2/3x3'] = ConvLayer(
         net['conv2/3x3_reduce'], 192, 3, pad=1, nonlinearity=elu, flip_filters=False)
     net['conv2/norm2'] = LRNLayer(net['conv2/3x3'], alpha=0.00002, k=1)
