@@ -1,0 +1,111 @@
+PATCH_SIZE:  129
+Network name:  detector129-1
+Parameters:  {'kgrowth': 1.8, 'decay': 1.0, 'K': 1.5, 'MN': 12000, 'egrowth': 0.985, 'N': 12000, 'epochs': 15, 'radius': 10, 'net_name': 'detector129-1', 'patch_size': 129, 'normalization': False, 'size': 2084}
+
+
+Data Reading.
+
+Reading in original image files:
+
+data/train_icpr/A01_05.bmp
+data/train_icpr/A03_09.bmp
+data/train_icpr/A02_00.bmp
+data/train_icpr/A03_06.bmp
+data/train_icpr/A03_08.bmp
+data/train_icpr/A03_03.bmp
+data/train_icpr/A04_02.bmp
+data/train_icpr/A01_02.bmp
+data/train_icpr/A02_07.bmp
+data/train_icpr/A02_06.bmp
+data/train_icpr/A00_03.bmp
+data/train_icpr/A02_04.bmp
+data/train_icpr/A01_03.bmp
+data/train_icpr/A00_01.bmp
+data/train_icpr/A00_05.bmp
+data/train_icpr/A00_09.bmp
+data/train_icpr/A04_04.bmp
+data/train_icpr/A02_09.bmp
+data/train_icpr/A03_05.bmp
+data/train_icpr/A04_08.bmp
+data/train_icpr/A04_05.bmp
+data/train_icpr/A04_06.bmp
+data/train_icpr/A02_08.bmp
+data/train_icpr/A04_03.bmp
+data/train_icpr/A00_08.bmp
+data/train_icpr/A02_05.bmp
+data/train_icpr/A04_00.bmp
+data/train_icpr/A02_02.bmp
+data/train_icpr/A04_09.bmp
+data/train_icpr/A01_08.bmp
+data/train_icpr/A01_07.bmp
+data/train_icpr/A04_01.bmp
+data/train_icpr/A00_04.bmp
+data/train_icpr/A03_02.bmp
+data/train_icpr/A01_00.bmp
+data/train_icpr/A01_01.bmp
+data/train_icpr/A00_02.bmp
+data/train_icpr/A03_01.bmp
+data/train_icpr/A00_06.bmp
+data/train_icpr/A03_07.bmp
+data/train_icpr/A03_04.bmp
+data/train_icpr/A00_07.bmp
+
+(42, 2084, 2084, 3)
+145197
+synthesizing image through reflection
+synthesized --  (42, 6252, 6252, 3)
+
+
+Creating and Designing CNN.
+Building Image Perturbation Models/Callbacks:
+
+
+Training Network!
+Made stack!
+Length of coords: 143197 length of sample 12000
+===============================
+===============================
+/tmp/cc6u4elK.s: Assembler messages:
+/tmp/cc6u4elK.s:3005: Error: no such instruction: `vinserti128 $0x1,%xmm0,%ymm1,%ymm0'
+/tmp/cc6u4elK.s:3013: Error: no such instruction: `vextracti128 $0x1,%ymm0,16(%rsi)'
+/tmp/cc6u4elK.s:3015: Error: no such instruction: `vinserti128 $0x1,%xmm0,%ymm1,%ymm0'
+/tmp/cc6u4elK.s:3017: Error: no such instruction: `vextracti128 $0x1,%ymm0,48(%rsi)'
+
+
+------------------------------------------------------------
+Sender: LSF System <lsfadmin@sarrusophone002-245.orchestra>
+Subject: Job 1478599: <source /opt/gpu.sh;  THEANO_FLAGS=floatX=float32 python -u detector129-1.py> Exited
+
+Job <source /opt/gpu.sh;  THEANO_FLAGS=floatX=float32 python -u detector129-1.py> was submitted from host <loge.orchestra> by user <nc151> in cluster <hms_orchestra>.
+Job was executed on host(s) <sarrusophone002-245.orchestra>, in queue <gpu>, as user <nc151> in cluster <hms_orchestra>.
+</home/nc151> was used as the home directory.
+</home/nc151/tupac> was used as the working directory.
+Started at Mon Sep 12 04:56:12 2016
+Results reported at Mon Sep 12 04:56:51 2016
+
+Your job looked like:
+
+------------------------------------------------------------
+# LSBATCH: User input
+source /opt/gpu.sh;  THEANO_FLAGS=floatX=float32 python -u detector129-1.py
+------------------------------------------------------------
+
+Exited with exit code 1.
+
+Resource usage summary:
+
+    CPU time   :     11.73 sec.
+    Max Memory :      7465 MB
+    Max Swap   :    331924 MB
+
+    Max Processes  :         4
+    Max Threads    :         5
+
+The output (if any) is above this job summary.
+
+
+
+PS:
+
+Read file <debug/detector129-11478599_prgmdata.err> for stderr output of this job.
+

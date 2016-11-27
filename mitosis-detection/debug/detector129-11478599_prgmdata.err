@@ -1,0 +1,1068 @@
+No handlers could be found for logger "sknn"
+00001	#include <Python.h>
+00002	#include <iostream>
+00003	#include "theano_mod_helper.h"
+00004	#include <math.h>
+00005	#include <numpy/arrayobject.h>
+00006	#include <numpy/arrayscalars.h>
+00007	//////////////////////
+00008	////  Support Code
+00009	//////////////////////
+00010	
+00011	
+00012	    namespace {
+00013	    struct __struct_compiled_op_cdb0b986639740d2acf156f042fe37d2 {
+00014	        PyObject* __ERROR;
+00015	
+00016	        PyObject* storage_V3;
+00017	PyObject* storage_V5;
+00018	PyObject* storage_V7;
+00019	PyObject* storage_V9;
+00020	PyObject* storage_V11;
+00021	PyObject* storage_V13;
+00022	PyObject* storage_V1;
+00023	        
+00024	
+00025	        __struct_compiled_op_cdb0b986639740d2acf156f042fe37d2() {
+00026	            // This is only somewhat safe because we:
+00027	            //  1) Are not a virtual class
+00028	            //  2) Do not use any virtual classes in the members
+00029	            //  3) Deal with mostly POD and pointers
+00030	
+00031	            // If this changes, we would have to revise this, but for
+00032	            // now I am tired of chasing segfaults because
+00033	            // initialization code had an error and some pointer has
+00034	            // a junk value.
+00035	            memset(this, 0, sizeof(*this));
+00036	        }
+00037	        ~__struct_compiled_op_cdb0b986639740d2acf156f042fe37d2(void) {
+00038	            cleanup();
+00039	        }
+00040	
+00041	        int init(PyObject* __ERROR, PyObject* storage_V3, PyObject* storage_V5, PyObject* storage_V7, PyObject* storage_V9, PyObject* storage_V11, PyObject* storage_V13, PyObject* storage_V1) {
+00042	            Py_XINCREF(storage_V3);
+00043	Py_XINCREF(storage_V5);
+00044	Py_XINCREF(storage_V7);
+00045	Py_XINCREF(storage_V9);
+00046	Py_XINCREF(storage_V11);
+00047	Py_XINCREF(storage_V13);
+00048	Py_XINCREF(storage_V1);
+00049	            this->storage_V3 = storage_V3;
+00050	this->storage_V5 = storage_V5;
+00051	this->storage_V7 = storage_V7;
+00052	this->storage_V9 = storage_V9;
+00053	this->storage_V11 = storage_V11;
+00054	this->storage_V13 = storage_V13;
+00055	this->storage_V1 = storage_V1;
+00056	            
+00057	
+00058	
+00059	
+00060	
+00061	
+00062	
+00063	
+00064	
+00065	            this->__ERROR = __ERROR;
+00066	            return 0;
+00067	        }
+00068	        void cleanup(void) {
+00069	            __label_1:
+00070	
+00071	double __DUMMY_1;
+00072	__label_3:
+00073	
+00074	double __DUMMY_3;
+00075	__label_5:
+00076	
+00077	double __DUMMY_5;
+00078	__label_7:
+00079	
+00080	double __DUMMY_7;
+00081	__label_9:
+00082	
+00083	double __DUMMY_9;
+00084	__label_11:
+00085	
+00086	double __DUMMY_11;
+00087	__label_13:
+00088	
+00089	double __DUMMY_13;
+00090	__label_16:
+00091	
+00092	double __DUMMY_16;
+00093	
+00094	            Py_XDECREF(this->storage_V3);
+00095	Py_XDECREF(this->storage_V5);
+00096	Py_XDECREF(this->storage_V7);
+00097	Py_XDECREF(this->storage_V9);
+00098	Py_XDECREF(this->storage_V11);
+00099	Py_XDECREF(this->storage_V13);
+00100	Py_XDECREF(this->storage_V1);
+00101	        }
+00102	        int run(void) {
+00103	            int __failure = 0;
+00104	            
+00105	    PyObject* py_V1;
+00106	    
+00107	        PyArrayObject* V1;
+00108	        
+00109	            typedef npy_int32 dtype_V1;
+00110	            
+00111	    PyObject* py_V3;
+00112	    
+00113	        PyArrayObject* V3;
+00114	        
+00115	            typedef npy_int64 dtype_V3;
+00116	            
+00117	    PyObject* py_V5;
+00118	    
+00119	        PyArrayObject* V5;
+00120	        
+00121	            typedef npy_int32 dtype_V5;
+00122	            
+00123	    PyObject* py_V7;
+00124	    
+00125	        PyArrayObject* V7;
+00126	        
+00127	            typedef npy_int32 dtype_V7;
+00128	            
+00129	    PyObject* py_V9;
+00130	    
+00131	        PyArrayObject* V9;
+00132	        
+00133	            typedef npy_int64 dtype_V9;
+00134	            
+00135	    PyObject* py_V11;
+00136	    
+00137	        PyArrayObject* V11;
+00138	        
+00139	            typedef npy_int32 dtype_V11;
+00140	            
+00141	    PyObject* py_V13;
+00142	    
+00143	        PyArrayObject* V13;
+00144	        
+00145	            typedef npy_int32 dtype_V13;
+00146	            
+00147	{
+00148	
+00149	    py_V1 = Py_None;
+00150	    {Py_XINCREF(py_V1);}
+00151	    
+00152	        V1 = NULL;
+00153	        
+00154	{
+00155	
+00156	    py_V3 = PyList_GET_ITEM(storage_V3, 0);
+00157	    {Py_XINCREF(py_V3);}
+00158	    
+00159	            V3 = NULL;
+00160	            if (py_V3 == Py_None) {
+00161	                // We can either fail here or set V3 to NULL and rely on Ops
+00162	                // using tensors to handle the NULL case, but if they fail to do so
+00163	                // they'll end up with nasty segfaults, so this is public service.
+00164	                PyErr_SetString(PyExc_ValueError, "expected an ndarray, not None");
+00165	                {
+00166	        __failure = 4;
+00167	        if (!PyErr_Occurred()) {
+00168	            PyErr_SetString(PyExc_RuntimeError,
+00169	                "Unexpected error in an Op's C code. "
+00170	                "No Python exception was set.");
+00171	            }
+00172	        goto __label_4;}
+00173	            }
+00174	            if (!PyArray_Check(py_V3)) {
+00175	                PyErr_SetString(PyExc_ValueError, "expected an ndarray");
+00176	                {
+00177	        __failure = 4;
+00178	        if (!PyErr_Occurred()) {
+00179	            PyErr_SetString(PyExc_RuntimeError,
+00180	                "Unexpected error in an Op's C code. "
+00181	                "No Python exception was set.");
+00182	            }
+00183	        goto __label_4;}
+00184	            }
+00185	            // We expect NPY_INT64
+00186	            if (!PyArray_ISALIGNED((PyArrayObject*) py_V3)) {
+00187	                PyArrayObject * tmp = (PyArrayObject*) py_V3;
+00188	                PyErr_Format(PyExc_NotImplementedError,
+00189	                             "expected an aligned array of type %ld "
+00190	                             "(NPY_INT64), got non-aligned array of type %ld"
+00191	                             " with %ld dimensions, with 3 last dims "
+00192	                             "%ld, %ld, %ld"
+00193	                             " and 3 last strides %ld %ld, %ld.",
+00194	                             (long int) NPY_INT64,
+00195	                             (long int) PyArray_TYPE((PyArrayObject*) py_V3),
+00196	                             (long int) PyArray_NDIM(tmp),
+00197	                             (long int) PyArray_NDIM(tmp) >= 3 ?
+00198	            PyArray_DIMS(tmp)[PyArray_NDIM(tmp)-3] : -1,
+00199	                             (long int) PyArray_NDIM(tmp) >= 2 ?
+00200	            PyArray_DIMS(tmp)[PyArray_NDIM(tmp)-2] : -1,
+00201	                             (long int) PyArray_NDIM(tmp) >= 1 ?
+00202	            PyArray_DIMS(tmp)[PyArray_NDIM(tmp)-1] : -1,
+00203	                             (long int) PyArray_NDIM(tmp) >= 3 ?
+00204	            PyArray_STRIDES(tmp)[PyArray_NDIM(tmp)-3] : -1,
+00205	                             (long int) PyArray_NDIM(tmp) >= 2 ?
+00206	            PyArray_STRIDES(tmp)[PyArray_NDIM(tmp)-2] : -1,
+00207	                             (long int) PyArray_NDIM(tmp) >= 1 ?
+00208	            PyArray_STRIDES(tmp)[PyArray_NDIM(tmp)-1] : -1
+00209	            );
+00210	                {
+00211	        __failure = 4;
+00212	        if (!PyErr_Occurred()) {
+00213	            PyErr_SetString(PyExc_RuntimeError,
+00214	                "Unexpected error in an Op's C code. "
+00215	                "No Python exception was set.");
+00216	            }
+00217	        goto __label_4;}
+00218	            }
+00219	            // This is a TypeError to be consistent with DEBUG_MODE
+00220	            // Note: DEBUG_MODE also tells the name of the container
+00221	            if (PyArray_TYPE((PyArrayObject*) py_V3) != NPY_INT64) {
+00222	                PyErr_Format(PyExc_TypeError,
+00223	                             "expected type_num %d (NPY_INT64) got %d",
+00224	                             NPY_INT64, PyArray_TYPE((PyArrayObject*) py_V3));
+00225	                {
+00226	        __failure = 4;
+00227	        if (!PyErr_Occurred()) {
+00228	            PyErr_SetString(PyExc_RuntimeError,
+00229	                "Unexpected error in an Op's C code. "
+00230	                "No Python exception was set.");
+00231	            }
+00232	        goto __label_4;}
+00233	            }
+00234	            
+00235	        V3 = (PyArrayObject*)(py_V3);
+00236	        Py_XINCREF(V3);
+00237	        
+00238	{
+00239	
+00240	    py_V5 = PyList_GET_ITEM(storage_V5, 0);
+00241	    {Py_XINCREF(py_V5);}
+00242	    
+00243	            V5 = NULL;
+00244	            if (py_V5 == Py_None) {
+00245	                // We can either fail here or set V5 to NULL and rely on Ops
+00246	                // using tensors to handle the NULL case, but if they fail to do so
+00247	                // they'll end up with nasty segfaults, so this is public service.
+00248	                PyErr_SetString(PyExc_ValueError, "expected an ndarray, not None");
+00249	                {
+00250	        __failure = 6;
+00251	        if (!PyErr_Occurred()) {
+00252	            PyErr_SetString(PyExc_RuntimeError,
+00253	                "Unexpected error in an Op's C code. "
+00254	                "No Python exception was set.");
+00255	            }
+00256	        goto __label_6;}
+00257	            }
+00258	            if (!PyArray_Check(py_V5)) {
+00259	                PyErr_SetString(PyExc_ValueError, "expected an ndarray");
+00260	                {
+00261	        __failure = 6;
+00262	        if (!PyErr_Occurred()) {
+00263	            PyErr_SetString(PyExc_RuntimeError,
+00264	                "Unexpected error in an Op's C code. "
+00265	                "No Python exception was set.");
+00266	            }
+00267	        goto __label_6;}
+00268	            }
+00269	            // We expect NPY_INT32
+00270	            if (!PyArray_ISALIGNED((PyArrayObject*) py_V5)) {
+00271	                PyArrayObject * tmp = (PyArrayObject*) py_V5;
+00272	                PyErr_Format(PyExc_NotImplementedError,
+00273	                             "expected an aligned array of type %ld "
+00274	                             "(NPY_INT32), got non-aligned array of type %ld"
+00275	                             " with %ld dimensions, with 3 last dims "
+00276	                             "%ld, %ld, %ld"
+00277	                             " and 3 last strides %ld %ld, %ld.",
+00278	                             (long int) NPY_INT32,
+00279	                             (long int) PyArray_TYPE((PyArrayObject*) py_V5),
+00280	                             (long int) PyArray_NDIM(tmp),
+00281	                             (long int) PyArray_NDIM(tmp) >= 3 ?
+00282	            PyArray_DIMS(tmp)[PyArray_NDIM(tmp)-3] : -1,
+00283	                             (long int) PyArray_NDIM(tmp) >= 2 ?
+00284	            PyArray_DIMS(tmp)[PyArray_NDIM(tmp)-2] : -1,
+00285	                             (long int) PyArray_NDIM(tmp) >= 1 ?
+00286	            PyArray_DIMS(tmp)[PyArray_NDIM(tmp)-1] : -1,
+00287	                             (long int) PyArray_NDIM(tmp) >= 3 ?
+00288	            PyArray_STRIDES(tmp)[PyArray_NDIM(tmp)-3] : -1,
+00289	                             (long int) PyArray_NDIM(tmp) >= 2 ?
+00290	            PyArray_STRIDES(tmp)[PyArray_NDIM(tmp)-2] : -1,
+00291	                             (long int) PyArray_NDIM(tmp) >= 1 ?
+00292	            PyArray_STRIDES(tmp)[PyArray_NDIM(tmp)-1] : -1
+00293	            );
+00294	                {
+00295	        __failure = 6;
+00296	        if (!PyErr_Occurred()) {
+00297	            PyErr_SetString(PyExc_RuntimeError,
+00298	                "Unexpected error in an Op's C code. "
+00299	                "No Python exception was set.");
+00300	            }
+00301	        goto __label_6;}
+00302	            }
+00303	            // This is a TypeError to be consistent with DEBUG_MODE
+00304	            // Note: DEBUG_MODE also tells the name of the container
+00305	            if (PyArray_TYPE((PyArrayObject*) py_V5) != NPY_INT32) {
+00306	                PyErr_Format(PyExc_TypeError,
+00307	                             "expected type_num %d (NPY_INT32) got %d",
+00308	                             NPY_INT32, PyArray_TYPE((PyArrayObject*) py_V5));
+00309	                {
+00310	        __failure = 6;
+00311	        if (!PyErr_Occurred()) {
+00312	            PyErr_SetString(PyExc_RuntimeError,
+00313	                "Unexpected error in an Op's C code. "
+00314	                "No Python exception was set.");
+00315	            }
+00316	        goto __label_6;}
+00317	            }
+00318	            
+00319	        V5 = (PyArrayObject*)(py_V5);
+00320	        Py_XINCREF(V5);
+00321	        
+00322	{
+00323	
+00324	    py_V7 = PyList_GET_ITEM(storage_V7, 0);
+00325	    {Py_XINCREF(py_V7);}
+00326	    
+00327	            V7 = NULL;
+00328	            if (py_V7 == Py_None) {
+00329	                // We can either fail here or set V7 to NULL and rely on Ops
+00330	                // using tensors to handle the NULL case, but if they fail to do so
+00331	                // they'll end up with nasty segfaults, so this is public service.
+00332	                PyErr_SetString(PyExc_ValueError, "expected an ndarray, not None");
+00333	                {
+00334	        __failure = 8;
+00335	        if (!PyErr_Occurred()) {
+00336	            PyErr_SetString(PyExc_RuntimeError,
+00337	                "Unexpected error in an Op's C code. "
+00338	                "No Python exception was set.");
+00339	            }
+00340	        goto __label_8;}
+00341	            }
+00342	            if (!PyArray_Check(py_V7)) {
+00343	                PyErr_SetString(PyExc_ValueError, "expected an ndarray");
+00344	                {
+00345	        __failure = 8;
+00346	        if (!PyErr_Occurred()) {
+00347	            PyErr_SetString(PyExc_RuntimeError,
+00348	                "Unexpected error in an Op's C code. "
+00349	                "No Python exception was set.");
+00350	            }
+00351	        goto __label_8;}
+00352	            }
+00353	            // We expect NPY_INT32
+00354	            if (!PyArray_ISALIGNED((PyArrayObject*) py_V7)) {
+00355	                PyArrayObject * tmp = (PyArrayObject*) py_V7;
+00356	                PyErr_Format(PyExc_NotImplementedError,
+00357	                             "expected an aligned array of type %ld "
+00358	                             "(NPY_INT32), got non-aligned array of type %ld"
+00359	                             " with %ld dimensions, with 3 last dims "
+00360	                             "%ld, %ld, %ld"
+00361	                             " and 3 last strides %ld %ld, %ld.",
+00362	                             (long int) NPY_INT32,
+00363	                             (long int) PyArray_TYPE((PyArrayObject*) py_V7),
+00364	                             (long int) PyArray_NDIM(tmp),
+00365	                             (long int) PyArray_NDIM(tmp) >= 3 ?
+00366	            PyArray_DIMS(tmp)[PyArray_NDIM(tmp)-3] : -1,
+00367	                             (long int) PyArray_NDIM(tmp) >= 2 ?
+00368	            PyArray_DIMS(tmp)[PyArray_NDIM(tmp)-2] : -1,
+00369	                             (long int) PyArray_NDIM(tmp) >= 1 ?
+00370	            PyArray_DIMS(tmp)[PyArray_NDIM(tmp)-1] : -1,
+00371	                             (long int) PyArray_NDIM(tmp) >= 3 ?
+00372	            PyArray_STRIDES(tmp)[PyArray_NDIM(tmp)-3] : -1,
+00373	                             (long int) PyArray_NDIM(tmp) >= 2 ?
+00374	            PyArray_STRIDES(tmp)[PyArray_NDIM(tmp)-2] : -1,
+00375	                             (long int) PyArray_NDIM(tmp) >= 1 ?
+00376	            PyArray_STRIDES(tmp)[PyArray_NDIM(tmp)-1] : -1
+00377	            );
+00378	                {
+00379	        __failure = 8;
+00380	        if (!PyErr_Occurred()) {
+00381	            PyErr_SetString(PyExc_RuntimeError,
+00382	                "Unexpected error in an Op's C code. "
+00383	                "No Python exception was set.");
+00384	            }
+00385	        goto __label_8;}
+00386	            }
+00387	            // This is a TypeError to be consistent with DEBUG_MODE
+00388	            // Note: DEBUG_MODE also tells the name of the container
+00389	            if (PyArray_TYPE((PyArrayObject*) py_V7) != NPY_INT32) {
+00390	                PyErr_Format(PyExc_TypeError,
+00391	                             "expected type_num %d (NPY_INT32) got %d",
+00392	                             NPY_INT32, PyArray_TYPE((PyArrayObject*) py_V7));
+00393	                {
+00394	        __failure = 8;
+00395	        if (!PyErr_Occurred()) {
+00396	            PyErr_SetString(PyExc_RuntimeError,
+00397	                "Unexpected error in an Op's C code. "
+00398	                "No Python exception was set.");
+00399	            }
+00400	        goto __label_8;}
+00401	            }
+00402	            
+00403	        V7 = (PyArrayObject*)(py_V7);
+00404	        Py_XINCREF(V7);
+00405	        
+00406	{
+00407	
+00408	    py_V9 = PyList_GET_ITEM(storage_V9, 0);
+00409	    {Py_XINCREF(py_V9);}
+00410	    
+00411	            V9 = NULL;
+00412	            if (py_V9 == Py_None) {
+00413	                // We can either fail here or set V9 to NULL and rely on Ops
+00414	                // using tensors to handle the NULL case, but if they fail to do so
+00415	                // they'll end up with nasty segfaults, so this is public service.
+00416	                PyErr_SetString(PyExc_ValueError, "expected an ndarray, not None");
+00417	                {
+00418	        __failure = 10;
+00419	        if (!PyErr_Occurred()) {
+00420	            PyErr_SetString(PyExc_RuntimeError,
+00421	                "Unexpected error in an Op's C code. "
+00422	                "No Python exception was set.");
+00423	            }
+00424	        goto __label_10;}
+00425	            }
+00426	            if (!PyArray_Check(py_V9)) {
+00427	                PyErr_SetString(PyExc_ValueError, "expected an ndarray");
+00428	                {
+00429	        __failure = 10;
+00430	        if (!PyErr_Occurred()) {
+00431	            PyErr_SetString(PyExc_RuntimeError,
+00432	                "Unexpected error in an Op's C code. "
+00433	                "No Python exception was set.");
+00434	            }
+00435	        goto __label_10;}
+00436	            }
+00437	            // We expect NPY_INT64
+00438	            if (!PyArray_ISALIGNED((PyArrayObject*) py_V9)) {
+00439	                PyArrayObject * tmp = (PyArrayObject*) py_V9;
+00440	                PyErr_Format(PyExc_NotImplementedError,
+00441	                             "expected an aligned array of type %ld "
+00442	                             "(NPY_INT64), got non-aligned array of type %ld"
+00443	                             " with %ld dimensions, with 3 last dims "
+00444	                             "%ld, %ld, %ld"
+00445	                             " and 3 last strides %ld %ld, %ld.",
+00446	                             (long int) NPY_INT64,
+00447	                             (long int) PyArray_TYPE((PyArrayObject*) py_V9),
+00448	                             (long int) PyArray_NDIM(tmp),
+00449	                             (long int) PyArray_NDIM(tmp) >= 3 ?
+00450	            PyArray_DIMS(tmp)[PyArray_NDIM(tmp)-3] : -1,
+00451	                             (long int) PyArray_NDIM(tmp) >= 2 ?
+00452	            PyArray_DIMS(tmp)[PyArray_NDIM(tmp)-2] : -1,
+00453	                             (long int) PyArray_NDIM(tmp) >= 1 ?
+00454	            PyArray_DIMS(tmp)[PyArray_NDIM(tmp)-1] : -1,
+00455	                             (long int) PyArray_NDIM(tmp) >= 3 ?
+00456	            PyArray_STRIDES(tmp)[PyArray_NDIM(tmp)-3] : -1,
+00457	                             (long int) PyArray_NDIM(tmp) >= 2 ?
+00458	            PyArray_STRIDES(tmp)[PyArray_NDIM(tmp)-2] : -1,
+00459	                             (long int) PyArray_NDIM(tmp) >= 1 ?
+00460	            PyArray_STRIDES(tmp)[PyArray_NDIM(tmp)-1] : -1
+00461	            );
+00462	                {
+00463	        __failure = 10;
+00464	        if (!PyErr_Occurred()) {
+00465	            PyErr_SetString(PyExc_RuntimeError,
+00466	                "Unexpected error in an Op's C code. "
+00467	                "No Python exception was set.");
+00468	            }
+00469	        goto __label_10;}
+00470	            }
+00471	            // This is a TypeError to be consistent with DEBUG_MODE
+00472	            // Note: DEBUG_MODE also tells the name of the container
+00473	            if (PyArray_TYPE((PyArrayObject*) py_V9) != NPY_INT64) {
+00474	                PyErr_Format(PyExc_TypeError,
+00475	                             "expected type_num %d (NPY_INT64) got %d",
+00476	                             NPY_INT64, PyArray_TYPE((PyArrayObject*) py_V9));
+00477	                {
+00478	        __failure = 10;
+00479	        if (!PyErr_Occurred()) {
+00480	            PyErr_SetString(PyExc_RuntimeError,
+00481	                "Unexpected error in an Op's C code. "
+00482	                "No Python exception was set.");
+00483	            }
+00484	        goto __label_10;}
+00485	            }
+00486	            
+00487	        V9 = (PyArrayObject*)(py_V9);
+00488	        Py_XINCREF(V9);
+00489	        
+00490	{
+00491	
+00492	    py_V11 = PyList_GET_ITEM(storage_V11, 0);
+00493	    {Py_XINCREF(py_V11);}
+00494	    
+00495	            V11 = NULL;
+00496	            if (py_V11 == Py_None) {
+00497	                // We can either fail here or set V11 to NULL and rely on Ops
+00498	                // using tensors to handle the NULL case, but if they fail to do so
+00499	                // they'll end up with nasty segfaults, so this is public service.
+00500	                PyErr_SetString(PyExc_ValueError, "expected an ndarray, not None");
+00501	                {
+00502	        __failure = 12;
+00503	        if (!PyErr_Occurred()) {
+00504	            PyErr_SetString(PyExc_RuntimeError,
+00505	                "Unexpected error in an Op's C code. "
+00506	                "No Python exception was set.");
+00507	            }
+00508	        goto __label_12;}
+00509	            }
+00510	            if (!PyArray_Check(py_V11)) {
+00511	                PyErr_SetString(PyExc_ValueError, "expected an ndarray");
+00512	                {
+00513	        __failure = 12;
+00514	        if (!PyErr_Occurred()) {
+00515	            PyErr_SetString(PyExc_RuntimeError,
+00516	                "Unexpected error in an Op's C code. "
+00517	                "No Python exception was set.");
+00518	            }
+00519	        goto __label_12;}
+00520	            }
+00521	            // We expect NPY_INT32
+00522	            if (!PyArray_ISALIGNED((PyArrayObject*) py_V11)) {
+00523	                PyArrayObject * tmp = (PyArrayObject*) py_V11;
+00524	                PyErr_Format(PyExc_NotImplementedError,
+00525	                             "expected an aligned array of type %ld "
+00526	                             "(NPY_INT32), got non-aligned array of type %ld"
+00527	                             " with %ld dimensions, with 3 last dims "
+00528	                             "%ld, %ld, %ld"
+00529	                             " and 3 last strides %ld %ld, %ld.",
+00530	                             (long int) NPY_INT32,
+00531	                             (long int) PyArray_TYPE((PyArrayObject*) py_V11),
+00532	                             (long int) PyArray_NDIM(tmp),
+00533	                             (long int) PyArray_NDIM(tmp) >= 3 ?
+00534	            PyArray_DIMS(tmp)[PyArray_NDIM(tmp)-3] : -1,
+00535	                             (long int) PyArray_NDIM(tmp) >= 2 ?
+00536	            PyArray_DIMS(tmp)[PyArray_NDIM(tmp)-2] : -1,
+00537	                             (long int) PyArray_NDIM(tmp) >= 1 ?
+00538	            PyArray_DIMS(tmp)[PyArray_NDIM(tmp)-1] : -1,
+00539	                             (long int) PyArray_NDIM(tmp) >= 3 ?
+00540	            PyArray_STRIDES(tmp)[PyArray_NDIM(tmp)-3] : -1,
+00541	                             (long int) PyArray_NDIM(tmp) >= 2 ?
+00542	            PyArray_STRIDES(tmp)[PyArray_NDIM(tmp)-2] : -1,
+00543	                             (long int) PyArray_NDIM(tmp) >= 1 ?
+00544	            PyArray_STRIDES(tmp)[PyArray_NDIM(tmp)-1] : -1
+00545	            );
+00546	                {
+00547	        __failure = 12;
+00548	        if (!PyErr_Occurred()) {
+00549	            PyErr_SetString(PyExc_RuntimeError,
+00550	                "Unexpected error in an Op's C code. "
+00551	                "No Python exception was set.");
+00552	            }
+00553	        goto __label_12;}
+00554	            }
+00555	            // This is a TypeError to be consistent with DEBUG_MODE
+00556	            // Note: DEBUG_MODE also tells the name of the container
+00557	            if (PyArray_TYPE((PyArrayObject*) py_V11) != NPY_INT32) {
+00558	                PyErr_Format(PyExc_TypeError,
+00559	                             "expected type_num %d (NPY_INT32) got %d",
+00560	                             NPY_INT32, PyArray_TYPE((PyArrayObject*) py_V11));
+00561	                {
+00562	        __failure = 12;
+00563	        if (!PyErr_Occurred()) {
+00564	            PyErr_SetString(PyExc_RuntimeError,
+00565	                "Unexpected error in an Op's C code. "
+00566	                "No Python exception was set.");
+00567	            }
+00568	        goto __label_12;}
+00569	            }
+00570	            
+00571	        V11 = (PyArrayObject*)(py_V11);
+00572	        Py_XINCREF(V11);
+00573	        
+00574	{
+00575	
+00576	    py_V13 = PyList_GET_ITEM(storage_V13, 0);
+00577	    {Py_XINCREF(py_V13);}
+00578	    
+00579	            V13 = NULL;
+00580	            if (py_V13 == Py_None) {
+00581	                // We can either fail here or set V13 to NULL and rely on Ops
+00582	                // using tensors to handle the NULL case, but if they fail to do so
+00583	                // they'll end up with nasty segfaults, so this is public service.
+00584	                PyErr_SetString(PyExc_ValueError, "expected an ndarray, not None");
+00585	                {
+00586	        __failure = 14;
+00587	        if (!PyErr_Occurred()) {
+00588	            PyErr_SetString(PyExc_RuntimeError,
+00589	                "Unexpected error in an Op's C code. "
+00590	                "No Python exception was set.");
+00591	            }
+00592	        goto __label_14;}
+00593	            }
+00594	            if (!PyArray_Check(py_V13)) {
+00595	                PyErr_SetString(PyExc_ValueError, "expected an ndarray");
+00596	                {
+00597	        __failure = 14;
+00598	        if (!PyErr_Occurred()) {
+00599	            PyErr_SetString(PyExc_RuntimeError,
+00600	                "Unexpected error in an Op's C code. "
+00601	                "No Python exception was set.");
+00602	            }
+00603	        goto __label_14;}
+00604	            }
+00605	            // We expect NPY_INT32
+00606	            if (!PyArray_ISALIGNED((PyArrayObject*) py_V13)) {
+00607	                PyArrayObject * tmp = (PyArrayObject*) py_V13;
+00608	                PyErr_Format(PyExc_NotImplementedError,
+00609	                             "expected an aligned array of type %ld "
+00610	                             "(NPY_INT32), got non-aligned array of type %ld"
+00611	                             " with %ld dimensions, with 3 last dims "
+00612	                             "%ld, %ld, %ld"
+00613	                             " and 3 last strides %ld %ld, %ld.",
+00614	                             (long int) NPY_INT32,
+00615	                             (long int) PyArray_TYPE((PyArrayObject*) py_V13),
+00616	                             (long int) PyArray_NDIM(tmp),
+00617	                             (long int) PyArray_NDIM(tmp) >= 3 ?
+00618	            PyArray_DIMS(tmp)[PyArray_NDIM(tmp)-3] : -1,
+00619	                             (long int) PyArray_NDIM(tmp) >= 2 ?
+00620	            PyArray_DIMS(tmp)[PyArray_NDIM(tmp)-2] : -1,
+00621	                             (long int) PyArray_NDIM(tmp) >= 1 ?
+00622	            PyArray_DIMS(tmp)[PyArray_NDIM(tmp)-1] : -1,
+00623	                             (long int) PyArray_NDIM(tmp) >= 3 ?
+00624	            PyArray_STRIDES(tmp)[PyArray_NDIM(tmp)-3] : -1,
+00625	                             (long int) PyArray_NDIM(tmp) >= 2 ?
+00626	            PyArray_STRIDES(tmp)[PyArray_NDIM(tmp)-2] : -1,
+00627	                             (long int) PyArray_NDIM(tmp) >= 1 ?
+00628	            PyArray_STRIDES(tmp)[PyArray_NDIM(tmp)-1] : -1
+00629	            );
+00630	                {
+00631	        __failure = 14;
+00632	        if (!PyErr_Occurred()) {
+00633	            PyErr_SetString(PyExc_RuntimeError,
+00634	                "Unexpected error in an Op's C code. "
+00635	                "No Python exception was set.");
+00636	            }
+00637	        goto __label_14;}
+00638	            }
+00639	            // This is a TypeError to be consistent with DEBUG_MODE
+00640	            // Note: DEBUG_MODE also tells the name of the container
+00641	            if (PyArray_TYPE((PyArrayObject*) py_V13) != NPY_INT32) {
+00642	                PyErr_Format(PyExc_TypeError,
+00643	                             "expected type_num %d (NPY_INT32) got %d",
+00644	                             NPY_INT32, PyArray_TYPE((PyArrayObject*) py_V13));
+00645	                {
+00646	        __failure = 14;
+00647	        if (!PyErr_Occurred()) {
+00648	            PyErr_SetString(PyExc_RuntimeError,
+00649	                "Unexpected error in an Op's C code. "
+00650	                "No Python exception was set.");
+00651	            }
+00652	        goto __label_14;}
+00653	            }
+00654	            
+00655	        V13 = (PyArrayObject*)(py_V13);
+00656	        Py_XINCREF(V13);
+00657	        
+00658	{
+00659	// Op class DotModulo
+00660	
+00661	        int osize = -1;
+00662	        if (PyArray_NDIM(V3) != 2) {PyErr_SetString(PyExc_NotImplementedError, "rank(A) != 2"); {
+00663	        __failure = 15;
+00664	        if (!PyErr_Occurred()) {
+00665	            PyErr_SetString(PyExc_RuntimeError,
+00666	                "Unexpected error in an Op's C code. "
+00667	                "No Python exception was set.");
+00668	            }
+00669	        goto __label_15;};}
+00670	        if (PyArray_NDIM(V5) != 1) {PyErr_SetString(PyExc_NotImplementedError, "rank(v) != 1"); {
+00671	        __failure = 15;
+00672	        if (!PyErr_Occurred()) {
+00673	            PyErr_SetString(PyExc_RuntimeError,
+00674	                "Unexpected error in an Op's C code. "
+00675	                "No Python exception was set.");
+00676	            }
+00677	        goto __label_15;};}
+00678	        if (PyArray_NDIM(V7) != 0) {PyErr_SetString(PyExc_NotImplementedError, "rank(m) != 0"); {
+00679	        __failure = 15;
+00680	        if (!PyErr_Occurred()) {
+00681	            PyErr_SetString(PyExc_RuntimeError,
+00682	                "Unexpected error in an Op's C code. "
+00683	                "No Python exception was set.");
+00684	            }
+00685	        goto __label_15;};}
+00686	        if (PyArray_NDIM(V9) != 2) {PyErr_SetString(PyExc_NotImplementedError, "rank(A2) != 2"); {
+00687	        __failure = 15;
+00688	        if (!PyErr_Occurred()) {
+00689	            PyErr_SetString(PyExc_RuntimeError,
+00690	                "Unexpected error in an Op's C code. "
+00691	                "No Python exception was set.");
+00692	            }
+00693	        goto __label_15;};}
+00694	        if (PyArray_NDIM(V11) != 1) {PyErr_SetString(PyExc_NotImplementedError, "rank(v2) != 1"); {
+00695	        __failure = 15;
+00696	        if (!PyErr_Occurred()) {
+00697	            PyErr_SetString(PyExc_RuntimeError,
+00698	                "Unexpected error in an Op's C code. "
+00699	                "No Python exception was set.");
+00700	            }
+00701	        goto __label_15;};}
+00702	        if (PyArray_NDIM(V13) != 0) {PyErr_SetString(PyExc_NotImplementedError, "rank(m2) != 0"); {
+00703	        __failure = 15;
+00704	        if (!PyErr_Occurred()) {
+00705	            PyErr_SetString(PyExc_RuntimeError,
+00706	                "Unexpected error in an Op's C code. "
+00707	                "No Python exception was set.");
+00708	            }
+00709	        goto __label_15;};}
+00710	
+00711	        if( PyArray_DIMS(V3)[1] != PyArray_DIMS(V5)[0])
+00712	        {PyErr_SetString(PyExc_NotImplementedError, "A and s shapes don't agree."); {
+00713	        __failure = 15;
+00714	        if (!PyErr_Occurred()) {
+00715	            PyErr_SetString(PyExc_RuntimeError,
+00716	                "Unexpected error in an Op's C code. "
+00717	                "No Python exception was set.");
+00718	            }
+00719	        goto __label_15;};}
+00720	        if( PyArray_DIMS(V9)[1] != PyArray_DIMS(V11)[0])
+00721	        {PyErr_SetString(PyExc_NotImplementedError, "A2 and s2 shapes don't agree."); {
+00722	        __failure = 15;
+00723	        if (!PyErr_Occurred()) {
+00724	            PyErr_SetString(PyExc_RuntimeError,
+00725	                "Unexpected error in an Op's C code. "
+00726	                "No Python exception was set.");
+00727	            }
+00728	        goto __label_15;};}
+00729	
+00730	        osize = PyArray_DIMS(V3)[0] + PyArray_DIMS(V9)[0];
+00731	        if (!V1
+00732	            || (PyArray_DIMS(V1)[0] != osize))
+00733	        {
+00734	            {Py_XDECREF(V1);}
+00735	            npy_intp dims[] = {0,};
+00736	            dims[0] = osize;
+00737	            V1 = (PyArrayObject*) PyArray_SimpleNew(1, dims, PyArray_TYPE(V5));
+00738	        }
+00739	
+00740	        if(!V1){{
+00741	        __failure = 15;
+00742	        if (!PyErr_Occurred()) {
+00743	            PyErr_SetString(PyExc_RuntimeError,
+00744	                "Unexpected error in an Op's C code. "
+00745	                "No Python exception was set.");
+00746	            }
+00747	        goto __label_15;};}
+00748	
+00749	        {   //makes it compile even though labels jump over variable definitions.
+00750	
+00751	            // A has size MxN, s has N, output M
+00752	            npy_intp M = PyArray_DIMS(V3)[0];
+00753	            npy_intp N = PyArray_DIMS(V3)[1];
+00754	
+00755	            const dtype_V3* __restrict__ DA = (dtype_V3*)PyArray_DATA(V3);
+00756	            dtype_V5* __restrict__ Ds = (dtype_V5*)PyArray_DATA(V5);
+00757	            dtype_V1* __restrict__ Dz = (dtype_V1*)PyArray_DATA(V1);
+00758	            const dtype_V7 m = ((dtype_V7*)PyArray_DATA(V7))[0];
+00759	
+00760	            npy_intp SA = PyArray_STRIDES(V3)[1] / PyArray_DESCR(V3)->elsize;
+00761	            npy_intp Ss = PyArray_STRIDES(V5)[0] / PyArray_DESCR(V5)->elsize;
+00762	            npy_intp Sz = PyArray_STRIDES(V1)[0] / PyArray_DESCR(V1)->elsize;
+00763	
+00764	            for (npy_int32 i = 0; i < M; ++i)
+00765	            {
+00766	                const dtype_V3* __restrict__ Ak = (dtype_V3*)(PyArray_BYTES(V3) + PyArray_STRIDES(V3)[0] * i);
+00767	
+00768	                npy_int64 r = 0;
+00769	
+00770	                for (npy_int32 j = 0; j < N; ++j)
+00771	                {
+00772	                    r += (npy_int64)(Ds[j * Ss] * (npy_int64)(Ak[j * SA])) % m;
+00773	                }
+00774	
+00775	                Dz[i * Sz] = r % m;
+00776	            }
+00777	        }
+00778	
+00779	        //redo it with the second triple of inputs
+00780	        {
+00781	            // A has size MxN, s has N, output M
+00782	            npy_intp M = PyArray_DIMS(V9)[0];
+00783	            npy_intp N = PyArray_DIMS(V9)[1];
+00784	
+00785	            const dtype_V9* __restrict__ DA = (dtype_V9*)PyArray_DATA(V9);
+00786	            dtype_V11* __restrict__ Ds = (dtype_V11*)PyArray_DATA(V11);
+00787	            const dtype_V13 m = ((dtype_V13*)PyArray_DATA(V13))[0];
+00788	
+00789	            npy_intp SA = PyArray_STRIDES(V9)[1] / PyArray_DESCR(V9)->elsize;
+00790	            npy_intp Ss = PyArray_STRIDES(V11)[0] / PyArray_DESCR(V11)->elsize;
+00791	            npy_intp Sz = PyArray_STRIDES(V1)[0] / PyArray_DESCR(V1)->elsize;
+00792	
+00793	            dtype_V1* __restrict__ Dz = (dtype_V1*)PyArray_DATA(V1) + PyArray_DIMS(V3)[0] * Sz;
+00794	
+00795	            for (npy_int32 i = 0; i < M; ++i)
+00796	            {
+00797	                const dtype_V9* __restrict__ Ak = (dtype_V9*)(PyArray_BYTES(V9) + PyArray_STRIDES(V9)[0] * i);
+00798	
+00799	                npy_int64 r = 0;
+00800	
+00801	                for (npy_int32 j = 0; j < N; ++j)
+00802	                {
+00803	                    r += (npy_int64)(Ds[j * Ss] * (npy_int64)(Ak[j * SA])) % m;
+00804	                }
+00805	
+00806	                Dz[i * Sz] = r % m;
+00807	            }
+00808	
+00809	        }
+00810	
+00811	        __label_15:
+00812	
+00813	double __DUMMY_15;
+00814	
+00815	}
+00816	__label_14:
+00817	
+00818	        if (V13) {
+00819	            Py_XDECREF(V13);
+00820	        }
+00821	        
+00822	    {Py_XDECREF(py_V13);}
+00823	    
+00824	double __DUMMY_14;
+00825	
+00826	}
+00827	__label_12:
+00828	
+00829	        if (V11) {
+00830	            Py_XDECREF(V11);
+00831	        }
+00832	        
+00833	    {Py_XDECREF(py_V11);}
+00834	    
+00835	double __DUMMY_12;
+00836	
+00837	}
+00838	__label_10:
+00839	
+00840	        if (V9) {
+00841	            Py_XDECREF(V9);
+00842	        }
+00843	        
+00844	    {Py_XDECREF(py_V9);}
+00845	    
+00846	double __DUMMY_10;
+00847	
+00848	}
+00849	__label_8:
+00850	
+00851	        if (V7) {
+00852	            Py_XDECREF(V7);
+00853	        }
+00854	        
+00855	    {Py_XDECREF(py_V7);}
+00856	    
+00857	double __DUMMY_8;
+00858	
+00859	}
+00860	__label_6:
+00861	
+00862	        if (V5) {
+00863	            Py_XDECREF(V5);
+00864	        }
+00865	        
+00866	    {Py_XDECREF(py_V5);}
+00867	    
+00868	double __DUMMY_6;
+00869	
+00870	}
+00871	__label_4:
+00872	
+00873	        if (V3) {
+00874	            Py_XDECREF(V3);
+00875	        }
+00876	        
+00877	    {Py_XDECREF(py_V3);}
+00878	    
+00879	double __DUMMY_4;
+00880	
+00881	}
+00882	__label_2:
+00883	
+00884	    if (!__failure) {
+00885	      
+00886	        {Py_XDECREF(py_V1);}
+00887	        if (!V1) {
+00888	            Py_INCREF(Py_None);
+00889	            py_V1 = Py_None;
+00890	        }
+00891	        else if ((void*)py_V1 != (void*)V1) {
+00892	            py_V1 = (PyObject*)V1;
+00893	        }
+00894	
+00895	        {Py_XINCREF(py_V1);}
+00896	
+00897	        if (V1 && !PyArray_ISALIGNED((PyArrayObject*) py_V1)) {
+00898	            PyErr_Format(PyExc_NotImplementedError,
+00899	                         "c_sync: expected an aligned array, got non-aligned array of type %ld"
+00900	                         " with %ld dimensions, with 3 last dims "
+00901	                         "%ld, %ld, %ld"
+00902	                         " and 3 last strides %ld %ld, %ld.",
+00903	                         (long int) PyArray_TYPE((PyArrayObject*) py_V1),
+00904	                         (long int) PyArray_NDIM(V1),
+00905	                         (long int) PyArray_NDIM(V1) >= 3 ?
+00906	        PyArray_DIMS(V1)[PyArray_NDIM(V1)-3] : -1,
+00907	                         (long int) PyArray_NDIM(V1) >= 2 ?
+00908	        PyArray_DIMS(V1)[PyArray_NDIM(V1)-2] : -1,
+00909	                         (long int) PyArray_NDIM(V1) >= 1 ?
+00910	        PyArray_DIMS(V1)[PyArray_NDIM(V1)-1] : -1,
+00911	                         (long int) PyArray_NDIM(V1) >= 3 ?
+00912	        PyArray_STRIDES(V1)[PyArray_NDIM(V1)-3] : -1,
+00913	                         (long int) PyArray_NDIM(V1) >= 2 ?
+00914	        PyArray_STRIDES(V1)[PyArray_NDIM(V1)-2] : -1,
+00915	                         (long int) PyArray_NDIM(V1) >= 1 ?
+00916	        PyArray_STRIDES(V1)[PyArray_NDIM(V1)-1] : -1
+00917	        );
+00918	            {
+00919	        __failure = 2;
+00920	        if (!PyErr_Occurred()) {
+00921	            PyErr_SetString(PyExc_RuntimeError,
+00922	                "Unexpected error in an Op's C code. "
+00923	                "No Python exception was set.");
+00924	            }
+00925	        goto __label_2;}
+00926	        }
+00927	        
+00928	      PyObject* old = PyList_GET_ITEM(storage_V1, 0);
+00929	      {Py_XINCREF(py_V1);}
+00930	      PyList_SET_ITEM(storage_V1, 0, py_V1);
+00931	      {Py_XDECREF(old);}
+00932	    }
+00933	    
+00934	        if (V1) {
+00935	            Py_XDECREF(V1);
+00936	        }
+00937	        
+00938	    {Py_XDECREF(py_V1);}
+00939	    
+00940	double __DUMMY_2;
+00941	
+00942	}
+00943	
+00944	            
+00945	        if (__failure) {
+00946	            // When there is a failure, this code puts the exception
+00947	            // in __ERROR.
+00948	            PyObject* err_type = NULL;
+00949	            PyObject* err_msg = NULL;
+00950	            PyObject* err_traceback = NULL;
+00951	            PyErr_Fetch(&err_type, &err_msg, &err_traceback);
+00952	            if (!err_type) {err_type = Py_None;Py_INCREF(Py_None);}
+00953	            if (!err_msg) {err_msg = Py_None; Py_INCREF(Py_None);}
+00954	            if (!err_traceback) {err_traceback = Py_None; Py_INCREF(Py_None);}
+00955	            PyObject* old_err_type = PyList_GET_ITEM(__ERROR, 0);
+00956	            PyObject* old_err_msg = PyList_GET_ITEM(__ERROR, 1);
+00957	            PyObject* old_err_traceback = PyList_GET_ITEM(__ERROR, 2);
+00958	            PyList_SET_ITEM(__ERROR, 0, err_type);
+00959	            PyList_SET_ITEM(__ERROR, 1, err_msg);
+00960	            PyList_SET_ITEM(__ERROR, 2, err_traceback);
+00961	            {Py_XDECREF(old_err_type);}
+00962	            {Py_XDECREF(old_err_msg);}
+00963	            {Py_XDECREF(old_err_traceback);}
+00964	        }
+00965	        // The failure code is returned to index what code block failed.
+00966	        return __failure;
+00967	        
+00968	        }
+00969	    };
+00970	    }
+00971	    
+00972	
+00973	        static int __struct_compiled_op_cdb0b986639740d2acf156f042fe37d2_executor(__struct_compiled_op_cdb0b986639740d2acf156f042fe37d2* self) {
+00974	            return self->run();
+00975	        }
+00976	
+00977	        static void __struct_compiled_op_cdb0b986639740d2acf156f042fe37d2_destructor(void* executor, void* self) {
+00978	            delete ((__struct_compiled_op_cdb0b986639740d2acf156f042fe37d2*)self);
+00979	        }
+00980	        
+00981	//////////////////////
+00982	////  Functions
+00983	//////////////////////
+00984	static PyObject * instantiate(PyObject * self, PyObject *argtuple) {
+00985	  assert(PyTuple_Check(argtuple));
+00986	  if (8 != PyTuple_Size(argtuple)){ 
+00987	     PyErr_Format(PyExc_TypeError, "Wrong number of arguments, expected 8, got %i", (int)PyTuple_Size(argtuple));
+00988	     return NULL;
+00989	  }
+00990	  __struct_compiled_op_cdb0b986639740d2acf156f042fe37d2* struct_ptr = new __struct_compiled_op_cdb0b986639740d2acf156f042fe37d2();
+00991	  if (struct_ptr->init( PyTuple_GET_ITEM(argtuple, 0),PyTuple_GET_ITEM(argtuple, 1),PyTuple_GET_ITEM(argtuple, 2),PyTuple_GET_ITEM(argtuple, 3),PyTuple_GET_ITEM(argtuple, 4),PyTuple_GET_ITEM(argtuple, 5),PyTuple_GET_ITEM(argtuple, 6),PyTuple_GET_ITEM(argtuple, 7) ) != 0) {
+00992	    delete struct_ptr;
+00993	    return NULL;
+00994	  }
+00995	  PyObject* thunk = PyCObject_FromVoidPtrAndDesc((void*)(&__struct_compiled_op_cdb0b986639740d2acf156f042fe37d2_executor), struct_ptr, __struct_compiled_op_cdb0b986639740d2acf156f042fe37d2_destructor);
+00996	  return thunk; }
+00997	
+00998	//////////////////////
+00999	////  Module init
+01000	//////////////////////
+01001	static PyMethodDef MyMethods[] = {
+01002		{"instantiate", instantiate, METH_VARARGS, "undocumented"} ,
+01003		{NULL, NULL, 0, NULL}
+01004	};
+01005	PyMODINIT_FUNC initcdb0b986639740d2acf156f042fe37d2(void){
+01006	   import_array();
+01007	   (void) Py_InitModule("cdb0b986639740d2acf156f042fe37d2", MyMethods);
+01008	}
+01009	
+Problem occurred during compilation with the command line below:
+/opt/gcc/4.8.5/bin/g++ -shared -g -O3 -fno-math-errno -Wno-unused-label -Wno-unused-variable -Wno-write-strings -march=core-avx2 -mcx16 -msahf -mmovbe -maes -mpclmul -mpopcnt -mabm -mno-lwp -mfma -mno-fma4 -mno-xop -mbmi -mbmi2 -mno-tbm -mavx -mavx2 -msse4.2 -msse4.1 -mlzcnt -mno-rtm -mno-hle -mrdrnd -mf16c -mfsgsbase -mno-rdseed -mno-prfchw -mno-adx -mfxsr -mxsave -mxsaveopt --param l1-cache-size=32 --param l1-cache-line-size=64 --param l2-cache-size=25600 -mtune=generic -DNPY_NO_DEPRECATED_API=NPY_1_7_API_VERSION -m64 -fPIC -I/home/nc151/learn2/lib/python2.7/site-packages/numpy/core/include -I/opt/python-2.7.6/include/python2.7 -I/home/nc151/learn2/lib/python2.7/site-packages/theano/gof -fvisibility=hidden -o /home/nc151/.theano/compiledir_Linux-2.6-el6.x86_64-x86_64-with-centos-6.8-Final-x86_64-2.7.6-64/tmpHBj0_Q/cdb0b986639740d2acf156f042fe37d2.so /home/nc151/.theano/compiledir_Linux-2.6-el6.x86_64-x86_64-with-centos-6.8-Final-x86_64-2.7.6-64/tmpHBj0_Q/mod.cpp -L/opt/python-2.7.6/lib -lpython2.7
+Traceback (most recent call last):
+  File "detector129-1.py", line 21, in <module>
+    train_icpr(params_dict)
+  File "/home/nc151/tupac/train_icpr.py", line 477, in train_icpr
+    nn.fit(data, val)
+  File "/home/nc151/learn2/lib/python2.7/site-packages/nolearn/lasagne/base.py", line 527, in fit
+    self.initialize()
+  File "/home/nc151/learn2/lib/python2.7/site-packages/nolearn/lasagne/base.py", line 367, in initialize
+    self.y_tensor_type,
+  File "/home/nc151/learn2/lib/python2.7/site-packages/nolearn/lasagne/base.py", line 474, in _create_iter_funcs
+    layers, target=y_batch, **objective_kw)
+  File "/home/nc151/learn2/lib/python2.7/site-packages/nolearn/lasagne/base.py", line 171, in objective
+    output_layer, deterministic=deterministic, **get_output_kw)
+  File "/home/nc151/learn2/lib/python2.7/site-packages/lasagne/layers/helper.py", line 191, in get_output
+    all_outputs[layer] = layer.get_output_for(layer_inputs, **kwargs)
+  File "/home/nc151/learn2/lib/python2.7/site-packages/lasagne/layers/noise.py", line 87, in get_output_for
+    dtype=input.dtype)
+  File "/home/nc151/learn2/lib/python2.7/site-packages/theano/sandbox/rng_mrg.py", line 1363, in binomial
+    x = self.uniform(size=size, nstreams=nstreams)
+  File "/home/nc151/learn2/lib/python2.7/site-packages/theano/sandbox/rng_mrg.py", line 1323, in uniform
+    rstates = self.get_substream_rstates(nstreams, dtype)
+  File "/home/nc151/learn2/lib/python2.7/site-packages/theano/configparser.py", line 112, in inner
+    return f(*args, **kwargs_)
+  File "/home/nc151/learn2/lib/python2.7/site-packages/theano/sandbox/rng_mrg.py", line 1225, in get_substream_rstates
+    multMatVect(rval[0], A1p72, M1, A2p72, M2)
+  File "/home/nc151/learn2/lib/python2.7/site-packages/theano/sandbox/rng_mrg.py", line 65, in multMatVect
+    [A_sym, s_sym, m_sym, A2_sym, s2_sym, m2_sym], o, profile=False)
+  File "/home/nc151/learn2/lib/python2.7/site-packages/theano/compile/function.py", line 322, in function
+    output_keys=output_keys)
+  File "/home/nc151/learn2/lib/python2.7/site-packages/theano/compile/pfunc.py", line 480, in pfunc
+    output_keys=output_keys)
+  File "/home/nc151/learn2/lib/python2.7/site-packages/theano/compile/function_module.py", line 1784, in orig_function
+    defaults)
+  File "/home/nc151/learn2/lib/python2.7/site-packages/theano/compile/function_module.py", line 1648, in create
+    input_storage=input_storage_lists, storage_map=storage_map)
+  File "/home/nc151/learn2/lib/python2.7/site-packages/theano/gof/link.py", line 699, in make_thunk
+    storage_map=storage_map)[:3]
+  File "/home/nc151/learn2/lib/python2.7/site-packages/theano/gof/vm.py", line 1042, in make_all
+    no_recycling))
+  File "/home/nc151/learn2/lib/python2.7/site-packages/theano/gof/op.py", line 975, in make_thunk
+    no_recycling)
+  File "/home/nc151/learn2/lib/python2.7/site-packages/theano/gof/op.py", line 875, in make_c_thunk
+    output_storage=node_output_storage)
+  File "/home/nc151/learn2/lib/python2.7/site-packages/theano/gof/cc.py", line 1189, in make_thunk
+    keep_lock=keep_lock)
+  File "/home/nc151/learn2/lib/python2.7/site-packages/theano/gof/cc.py", line 1130, in __compile__
+    keep_lock=keep_lock)
+  File "/home/nc151/learn2/lib/python2.7/site-packages/theano/gof/cc.py", line 1585, in cthunk_factory
+    key=key, lnk=self, keep_lock=keep_lock)
+  File "/home/nc151/learn2/lib/python2.7/site-packages/theano/gof/cmodule.py", line 1145, in module_from_key
+    module = lnk.compile_cmodule(location)
+  File "/home/nc151/learn2/lib/python2.7/site-packages/theano/gof/cc.py", line 1491, in compile_cmodule
+    preargs=preargs)
+  File "/home/nc151/learn2/lib/python2.7/site-packages/theano/gof/cmodule.py", line 2299, in compile_str
+    (status, compile_stderr.replace('\n', '. ')))
+Exception: ('The following error happened while compiling the node', DotModulo(A, s, m, A2, s2, m2), '\n', "Compilation failed (return status=1): /tmp/cc6u4elK.s: Assembler messages:. /tmp/cc6u4elK.s:3005: Error: no such instruction: `vinserti128 $0x1,%xmm0,%ymm1,%ymm0'. /tmp/cc6u4elK.s:3013: Error: no such instruction: `vextracti128 $0x1,%ymm0,16(%rsi)'. /tmp/cc6u4elK.s:3015: Error: no such instruction: `vinserti128 $0x1,%xmm0,%ymm1,%ymm0'. /tmp/cc6u4elK.s:3017: Error: no such instruction: `vextracti128 $0x1,%ymm0,48(%rsi)'. ", '[DotModulo(A, s, m, A2, s2, m2)]')
